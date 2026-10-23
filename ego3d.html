@@ -96,23 +96,23 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-actio
 #ghepSan{margin-top:calc(var(--u)*1);font-size:calc(var(--u)*2.6);color:var(--vang);min-height:calc(var(--u)*3)}
 
 /* ===== HUD ===== */
-#bang{position:absolute;left:50%;top:var(--tn);transform:translateX(-50%);display:flex;align-items:stretch;border-radius:calc(var(--u)*1.2);overflow:hidden;
-  box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.2) rgba(0,0,0,.5);font-weight:900}
-#bang div{padding:calc(var(--u)*.45) calc(var(--u)*1.4);display:flex;align-items:center;gap:calc(var(--u)*.7)}
-#bangX{background:linear-gradient(180deg,#3d8bff,#1d4fd0);font-size:calc(var(--u)*1.4)}
-#bangD{background:linear-gradient(180deg,#ff5a66,#c92336);font-size:calc(var(--u)*1.4)}
-#bangG{background:#0b1030;flex-direction:column;justify-content:center;min-width:calc(var(--u)*9);gap:0!important;padding:calc(var(--u)*.2) calc(var(--u)*1) !important}
-#bangG b{font-size:calc(var(--u)*2.8);line-height:1.05;letter-spacing:.06em;font-variant-numeric:tabular-nums}
-#bangG span{font-size:calc(var(--u)*1.1);color:#ffd23a;font-weight:800;line-height:1}
-.so2{font-size:calc(var(--u)*3);font-variant-numeric:tabular-nums}
-#nang{position:absolute;left:var(--tr);top:var(--tn);width:calc(var(--u)*24)}
+#bang{position:absolute;left:50%;top:var(--tn);transform:translateX(-50%);display:flex;align-items:stretch;border-radius:calc(var(--u)*1.5);overflow:hidden;
+  box-shadow:0 calc(var(--u)*.4) calc(var(--u)*1.8) rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.28);font-weight:900}
+#bang div{padding:calc(var(--u)*.5) calc(var(--u)*1.5);display:flex;align-items:center;gap:calc(var(--u)*.8)}
+#bangX{background:linear-gradient(160deg,#55a0ff,#1a46c6);font-size:calc(var(--u)*1.3);letter-spacing:.08em}
+#bangD{background:linear-gradient(200deg,#ff6b74,#b4182a);font-size:calc(var(--u)*1.3);letter-spacing:.08em}
+#bangG{background:linear-gradient(180deg,#1a2352,#060a22);flex-direction:column;justify-content:center;min-width:calc(var(--u)*9.5);gap:0!important;padding:calc(var(--u)*.2) calc(var(--u)*1.1) !important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+#bangG b{font-size:calc(var(--u)*2.9);line-height:1.05;letter-spacing:.06em;font-variant-numeric:tabular-nums;text-shadow:0 0 calc(var(--u)*1) rgba(120,180,255,.7)}
+#bangG span{font-size:calc(var(--u)*1.05);color:#ffd23a;font-weight:800;line-height:1;letter-spacing:.14em}
+.so2{font-size:calc(var(--u)*3.1);font-variant-numeric:tabular-nums;text-shadow:0 2px 0 rgba(0,0,0,.35),0 0 calc(var(--u)*1) rgba(255,255,255,.5)}
+#nang{position:absolute;left:var(--tr);top:var(--tn);width:calc(var(--u)*24);padding:calc(var(--u)*.6) calc(var(--u)*.9);border-radius:calc(var(--u)*1);background:linear-gradient(160deg,rgba(14,26,70,.7),rgba(6,10,30,.55));box-shadow:0 0 0 1px rgba(255,255,255,.18),0 calc(var(--u)*.3) calc(var(--u)*1) rgba(0,0,0,.4)}
 #nangTen{font-size:calc(var(--u)*1.5);font-weight:900;text-shadow:0 1px 4px #000}
 .ong{height:calc(var(--u)*1.3);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.35);border-radius:99px;overflow:hidden;margin-top:calc(var(--u)*.35)}
 .ong i{display:block;height:100%;width:0;background:linear-gradient(90deg,#27c4ff,#b3f0ff)}
 #nangTT i{background:linear-gradient(90deg,#ff7a1a,#ffe14a)} #nangTT.day{animation:nhip2 .6s ease-in-out infinite}
 @keyframes nhip2{50%{filter:brightness(1.6)}}
 #nangCh{font-size:calc(var(--u)*1.15);color:#cfe0ff;margin-top:calc(var(--u)*.3)}
-#nutDung{position:absolute;right:var(--ph);top:var(--tn);width:calc(var(--u)*4.4);height:calc(var(--u)*4.4);border-radius:50%;border:2px solid rgba(255,255,255,.6);background:rgba(10,24,70,.6);color:#fff;font-size:calc(var(--u)*1.9);padding:0;cursor:pointer;display:grid;place-items:center}
+#nutDung{position:absolute;right:var(--ph);top:var(--tn);width:calc(var(--u)*4.4);height:calc(var(--u)*4.4);border-radius:50%;border:2px solid rgba(255,255,255,.7);background:linear-gradient(160deg,rgba(40,70,160,.8),rgba(10,20,60,.8));box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1) rgba(0,0,0,.45);color:#fff;font-size:calc(var(--u)*1.9);padding:0;cursor:pointer;display:grid;place-items:center}
 #thongBao{position:absolute;left:50%;top:36%;transform:translate(-50%,-50%) scale(1);font-size:calc(var(--u)*9);font-weight:900;font-style:italic;text-align:center;
   background:linear-gradient(180deg,#fff,#ffe36a 60%,#ff9d1a);-webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(0 calc(var(--u)*.5) 0 rgba(120,50,0,.9)) drop-shadow(0 0 calc(var(--u)*2) rgba(255,190,50,.8));white-space:nowrap;opacity:0;pointer-events:none}
@@ -134,18 +134,35 @@ body.cam #chat{display:none}
 #cam{display:none}
 body.cam #cam.hien{display:block}
 #joyVung{position:absolute;left:0;top:18%;width:48%;bottom:0;pointer-events:auto;touch-action:none}
-#joyGoc{position:absolute;width:calc(var(--u)*13);height:calc(var(--u)*13);margin:calc(var(--u)*-6.5) 0 0 calc(var(--u)*-6.5);border-radius:50%;border:2px solid rgba(255,255,255,.55);background:rgba(255,255,255,.1);display:none;pointer-events:none}
-#joyNut{position:absolute;left:50%;top:50%;width:calc(var(--u)*6);height:calc(var(--u)*6);margin:calc(var(--u)*-3) 0 0 calc(var(--u)*-3);border-radius:50%;background:rgba(255,255,255,.55);border:2px solid #fff}
-.nutCam{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.8);background:rgba(20,40,110,.62);color:#fff;font:inherit;font-weight:900;
-  display:grid;place-items:center;text-align:center;line-height:1.05;pointer-events:auto;touch-action:none;padding:0;overflow:hidden;font-size:calc(var(--u)*1.35)}
-.nutCam.an{background:rgba(255,255,255,.5)}
-.nutCam .hoi{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);height:0}
-#cSut{right:calc(var(--ph) + var(--u)*1);bottom:calc(var(--du) + var(--u)*1);width:calc(var(--u)*13);height:calc(var(--u)*13);background:rgba(220,50,50,.65);font-size:calc(var(--u)*2.2)}
-#cChuyen{right:calc(var(--ph) + var(--u)*15);bottom:calc(var(--du) + var(--u)*1);width:calc(var(--u)*9);height:calc(var(--u)*9);background:rgba(40,130,255,.65)}
-#cTac{right:calc(var(--ph) + var(--u)*13);bottom:calc(var(--du) + var(--u)*11);width:calc(var(--u)*8.5);height:calc(var(--u)*8.5);background:rgba(40,160,90,.65)}
-#cChieu{right:calc(var(--ph) + var(--u)*2);bottom:calc(var(--du) + var(--u)*15);width:calc(var(--u)*8.5);height:calc(var(--u)*8.5);background:rgba(160,70,255,.65)}
-#cTT{right:calc(var(--ph) + var(--u)*24);bottom:calc(var(--du) + var(--u)*3);width:calc(var(--u)*8);height:calc(var(--u)*8);background:rgba(255,150,30,.65)}
-#cLach{right:calc(var(--ph) + var(--u)*23);bottom:calc(var(--du) + var(--u)*12.5);width:calc(var(--u)*7.5);height:calc(var(--u)*7.5);background:rgba(40,190,200,.6)}
+#joyGoc{position:absolute;width:calc(var(--u)*14);height:calc(var(--u)*14);margin:calc(var(--u)*-7) 0 0 calc(var(--u)*-7);border-radius:50%;border:2px solid rgba(255,255,255,.55);
+  background:radial-gradient(circle,rgba(255,255,255,.03) 50%,rgba(255,255,255,.18));box-shadow:0 0 calc(var(--u)*2) rgba(0,0,0,.35),inset 0 0 calc(var(--u)*1.5) rgba(255,255,255,.25);display:none;pointer-events:none}
+#joyGoc:before{content:"";position:absolute;inset:36%;border-radius:50%;border:1px dashed rgba(255,255,255,.45)}
+#joyNut{position:absolute;left:50%;top:50%;width:calc(var(--u)*6.4);height:calc(var(--u)*6.4);margin:calc(var(--u)*-3.2) 0 0 calc(var(--u)*-3.2);border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fff,#bcd7ff 60%,#7fb0ff);border:2px solid #fff;box-shadow:0 calc(var(--u)*.4) calc(var(--u)*1) rgba(0,0,0,.45)}
+.nutCam{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.85);color:#fff;font:inherit;font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;line-height:1;pointer-events:auto;touch-action:none;padding:0;overflow:hidden;font-size:calc(var(--u)*1.2);letter-spacing:.04em;text-shadow:0 1px 2px rgba(0,0,0,.6);
+  background:radial-gradient(circle at 35% 26%,rgba(255,255,255,.4),rgba(255,255,255,0) 46%),var(--nen-nut,rgba(20,40,110,.7));
+  box-shadow:0 calc(var(--u)*.45) calc(var(--u)*1.2) rgba(0,0,0,.45),inset 0 calc(var(--u)*-.5) calc(var(--u)*.8) rgba(0,0,0,.3),inset 0 0 0 calc(var(--u)*.3) rgba(255,255,255,.14);
+  transition:transform .08s,filter .08s}
+.nutCam i{font-style:normal;font-size:calc(var(--u)*2.5);line-height:1;margin-bottom:calc(var(--u)*.3);filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
+.nutCam span{line-height:1.05}
+.nutCam.an{transform:scale(.92);filter:brightness(1.35)}
+.nutCam .hoi{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);height:0;pointer-events:none}
+#cSut{--nen-nut:linear-gradient(180deg,#ff6b5a,#c0152a);right:calc(var(--ph) + var(--u)*1);bottom:calc(var(--du) + var(--u)*1);width:calc(var(--u)*13.5);height:calc(var(--u)*13.5);font-size:calc(var(--u)*2)}
+#cSut i{font-size:calc(var(--u)*4.2)}
+#cChuyen{--nen-nut:linear-gradient(180deg,#5aa6ff,#1a5ad0);right:calc(var(--ph) + var(--u)*15.5);bottom:calc(var(--du) + var(--u)*1);width:calc(var(--u)*9);height:calc(var(--u)*9)}
+#cTac{--nen-nut:linear-gradient(180deg,#4fd68a,#15814a);right:calc(var(--ph) + var(--u)*13.5);bottom:calc(var(--du) + var(--u)*11.3);width:calc(var(--u)*8.5);height:calc(var(--u)*8.5)}
+#cChieu{--nen-nut:linear-gradient(180deg,#c48fff,#7128d8);right:calc(var(--ph) + var(--u)*2.2);bottom:calc(var(--du) + var(--u)*15.6);width:calc(var(--u)*8.5);height:calc(var(--u)*8.5)}
+#cTT{--nen-nut:linear-gradient(180deg,#ffb347,#e85e0c);right:calc(var(--ph) + var(--u)*24.8);bottom:calc(var(--du) + var(--u)*3);width:calc(var(--u)*8);height:calc(var(--u)*8)}
+#cLach{--nen-nut:linear-gradient(180deg,#4fd9e8,#0f8794);right:calc(var(--ph) + var(--u)*23.6);bottom:calc(var(--du) + var(--u)*12.8);width:calc(var(--u)*7.5);height:calc(var(--u)*7.5)}
+#cTT.san{animation:nhip3 .8s ease-in-out infinite}
+@keyframes nhip3{50%{box-shadow:0 0 calc(var(--u)*2.4) #ffd23a,0 calc(var(--u)*.45) calc(var(--u)*1.2) rgba(0,0,0,.45);filter:brightness(1.3)}}
+#vien{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 52%,rgba(2,6,30,.5) 100%)}
+#iosTip{position:fixed;left:50%;bottom:calc(var(--du) + var(--u)*6.5);transform:translateX(-50%);width:min(92%,calc(var(--u)*60));background:linear-gradient(160deg,rgba(14,26,70,.96),rgba(6,10,30,.96));
+  border:1px solid rgba(140,180,255,.5);border-radius:calc(var(--u)*1.3);padding:calc(var(--u)*1) calc(var(--u)*1.4);font-size:calc(var(--u)*1.5);line-height:1.4;display:none;z-index:45;pointer-events:auto;box-shadow:0 calc(var(--u)*.5) calc(var(--u)*2) rgba(0,0,0,.5)}
+#iosTip.hien{display:flex;gap:calc(var(--u)*1);align-items:center}
+#iosTip b{color:var(--vang)}
+#iosTip button{flex:none;font:inherit;font-weight:900;font-size:calc(var(--u)*1.4);color:#241a00;background:linear-gradient(180deg,#fff08a,#ffb62e);border:0;border-radius:99px;padding:calc(var(--u)*.6) calc(var(--u)*1.4)}
 
 /* ===== HỘP THOẠI ===== */
 .hop{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(var(--u)*62);max-height:92%;overflow:auto;text-align:center;pointer-events:auto}
@@ -167,7 +184,7 @@ body.cam #cam.hien{display:block}
 .nhan.lopHoc{background:#0d6b45;border-color:#59e0a0}
 .nutNho{position:absolute;bottom:var(--du);width:calc(var(--u)*4.4);height:calc(var(--u)*4.4);border-radius:50%;border:2px solid #9fc2ff;background:rgba(10,24,70,.7);color:#fff;font-size:calc(var(--u)*2);font-weight:900;cursor:pointer;padding:0;display:grid;place-items:center;pointer-events:auto}
 #nutHD{right:calc(var(--ph) + var(--u)*5.2)} #nutToan{right:calc(var(--ph) + var(--u)*10.4)}
-#radar{position:absolute;right:var(--ph);top:calc(var(--tn) + var(--u)*5.6);width:calc(var(--u)*19);height:calc(var(--u)*11.4);border-radius:calc(var(--u)*.6);background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.45);opacity:.92}
+#radar{position:absolute;right:var(--ph);top:calc(var(--tn) + var(--u)*5.6);width:calc(var(--u)*19);height:calc(var(--u)*11.4);border-radius:calc(var(--u)*.8);background:rgba(0,0,0,.35);box-shadow:0 0 0 1px rgba(255,255,255,.4),0 calc(var(--u)*.3) calc(var(--u)*1) rgba(0,0,0,.4);opacity:.92}
 #muiBong{position:absolute;display:none;width:calc(var(--u)*3.4);height:calc(var(--u)*3.4);margin:0;border-radius:50%;background:#fff;color:#e22;font-size:calc(var(--u)*1.8);line-height:calc(var(--u)*3.4);text-align:center;box-shadow:0 0 calc(var(--u)*1.2) #fff;pointer-events:none;z-index:3}
 #goiY{position:absolute;left:50%;bottom:calc(var(--du) + var(--u)*.8);transform:translateX(-50%);max-width:60%;font-size:calc(var(--u)*1.4);color:#fff;background:rgba(0,0,0,.45);padding:calc(var(--u)*.4) calc(var(--u)*1.2);border-radius:99px;text-align:center;text-shadow:0 1px 3px #000;pointer-events:none;opacity:0;transition:opacity .4s}
 #toast{position:fixed;left:50%;top:14%;transform:translateX(-50%);max-width:80%;background:rgba(10,20,60,.95);border:2px solid #9fc2ff;border-radius:calc(var(--u)*1.2);padding:calc(var(--u)*1) calc(var(--u)*2);font-size:calc(var(--u)*1.7);font-weight:700;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s;z-index:60}
@@ -181,6 +198,7 @@ body.cam #cam.hien{display:block}
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="vien"></div>
 <div id="chop"></div>
 
 <!-- SẢNH CHỜ -->
@@ -250,12 +268,12 @@ body.cam #cam.hien{display:block}
 <!-- CẢM ỨNG -->
 <div id="cam" class="lop">
   <div id="joyVung"><div id="joyGoc"><div id="joyNut"></div></div></div>
-  <button class="nutCam" id="cSut">SÚT</button>
-  <button class="nutCam" id="cChuyen">CHUYỀN</button>
-  <button class="nutCam" id="cTac">TẮC</button>
-  <button class="nutCam" id="cChieu">CHIÊU<div class="hoi"></div></button>
-  <button class="nutCam" id="cTT">THỨC<br>TỈNH</button>
-  <button class="nutCam" id="cLach">LÁCH</button>
+  <button class="nutCam" id="cSut"><i>⚽</i><span>SÚT</span></button>
+  <button class="nutCam" id="cChuyen"><i>↗</i><span>CHUYỀN</span></button>
+  <button class="nutCam" id="cTac"><i>🛡</i><span>TẮC</span></button>
+  <button class="nutCam" id="cChieu"><i>✨</i><span>CHIÊU</span><div class="hoi"></div></button>
+  <button class="nutCam" id="cTT"><i>🔥</i><span>THỨC<br>TỈNH</span></button>
+  <button class="nutCam" id="cLach"><i>💨</i><span>LÁCH</span></button>
 </div>
 
 <!-- KẾT QUẢ -->
@@ -267,6 +285,7 @@ body.cam #cam.hien{display:block}
   <button class="nutLon" id="dungVe">Về sảnh</button>
 </div></div>
 <div id="toast"></div>
+<div id="iosTip"><div>Để chơi <b>toàn màn hình</b> trên iPhone: bấm nút <b>Chia sẻ</b> (ô vuông có mũi tên) rồi chọn <b>"Thêm vào Màn hình chính"</b>, sau đó mở game từ màn hình chính.</div><button id="iosTipDong">Đã hiểu</button></div>
 <div id="huongDanLop" class="lop"><div class="hop bang">
   <h2 class="chu3d">Cách chơi</h2>
   <div id="hdPhim" style="text-align:left;font-size:calc(var(--u)*1.55);line-height:1.5">
@@ -411,6 +430,8 @@ anhMat.shadow.camera.top = 26; anhMat.shadow.camera.bottom = -26;
 anhMat.shadow.camera.near = 5; anhMat.shadow.camera.far = 90;
 anhMat.shadow.bias = -0.0006;
 scene.add(anhMat); scene.add(anhMat.target);
+const anhPhu = new THREE.DirectionalLight(0x9ec8ff, 0.4);   // đèn phụ lạnh từ phía sau cho nhân vật có viền sáng
+anhPhu.position.set(-30, 22, -20); scene.add(anhPhu);
 
 // ===================== SÂN CỎ =====================
 function taoSan() {
@@ -543,6 +564,11 @@ function taoKhanDai() {
     bangDen.position.set(sx * (SAN_DAI + 16), 27, sz * (SAN_RONG + 12)); bangDen.lookAt(0, 8, 0); scene.add(bangDen);
     const quang = new THREE.Sprite(new THREE.SpriteMaterial({ map: texTron, color: 0xfff2c0, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0.75 }));
     quang.scale.set(20, 20, 1); quang.position.copy(bangDen.position); scene.add(quang);
+    // chùm sáng mờ từ đèn pha rọi xuống sân
+    const dich = new THREE.Vector3(sx * 8, 0, sz * 5), huong = dich.clone().sub(bangDen.position), dai = huong.length(); huong.normalize();
+    const chum = new THREE.Mesh(new THREE.ConeGeometry(15, dai, 20, 1, true), new THREE.MeshBasicMaterial({ color: 0xfff1c0, transparent: true, opacity: 0.04, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }));
+    chum.position.copy(bangDen.position).addScaledVector(huong, dai / 2);
+    chum.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), huong); scene.add(chum);
   }
   // bầu trời có sao
   const sky = new THREE.Mesh(new THREE.SphereGeometry(220, 24, 12), new THREE.MeshBasicMaterial({
@@ -937,14 +963,14 @@ function dungSanh() {
   nhom('chonKho', 'kho'); nhom('chonGio', 'gio', Number); nhom('chonMung', 'mung');
   capMauGiay();
   $('muiTrai').onclick = () => chonNV(CH.nv - 1); $('muiPhai').onclick = () => chonNV(CH.nv + 1);
-  $('nutTim').onclick = () => { moAmThanh(); tieng('coi'); batDauGhep(); };
+  $('nutTim').onclick = () => { tuBatToanManHinh(); moAmThanh(); tieng('coi'); $('iosTip').classList.remove('hien'); batDauGhep(); };
   $('nutAm').onclick = () => { tatAm = !tatAm; try { localStorage.setItem('ego3d_tat', tatAm ? '1' : '0'); } catch (e) { } $('nutAm').textContent = tatAm ? '🔇' : '🔊'; moAmThanh(); };
   $('nutAm').textContent = tatAm ? '🔇' : '🔊';
   $('nutToan').onclick = toanManHinh; $('nutHD').onclick = () => hienHuongDan(true);
   $('hdDong').onclick = () => hienHuongDan(false);
   $('dungToan').onclick = toanManHinh; $('dungHD').onclick = () => hienHuongDan(true);
   if (window.matchMedia && (matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches || navigator.standalone)) { $('nutToan').style.display = 'none'; $('dungToan').style.display = 'none'; }
-  chonNV(CH.nv, true);
+  chonNV(CH.nv, true); goiYiOS();
 }
 function capMauGiay() {
   document.querySelectorAll('.mauGiay').forEach((b, i) => b.classList.toggle('dang', i === CH.giay));
@@ -960,6 +986,26 @@ function toanManHinh() {
     const kq = fn.call(el);
     if (kq && kq.then) kq.then(() => { try { screen.orientation.lock('landscape').catch(() => { }); } catch (e) { } }).catch(() => { toast('Trình duyệt này không cho bật toàn màn hình.'); });
   } catch (e) { toast('Trình duyệt này không cho bật toàn màn hình.'); }
+}
+// Nhận biết iPhone/iPad (Safari và Chrome trên iPhone đều không cho bật toàn màn hình bằng mã)
+const LA_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const dangFull = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+const cheDoApp = () => (window.matchMedia && (matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches)) || navigator.standalone === true;
+// Tự bật toàn màn hình ngay khi người chơi chạm hoặc bấm (Chrome, Edge, Android). Phải gọi trong lúc đang chạm thì trình duyệt mới cho.
+function tuBatToanManHinh() {
+  if (LA_IOS || dangFull() || cheDoApp()) return;
+  const el = document.documentElement, fn = el.requestFullscreen || el.webkitRequestFullscreen; if (!fn) return;
+  try { const kq = fn.call(el, { navigationUI: 'hide' }); if (kq && kq.catch) kq.catch(() => { }); } catch (e) { }
+}
+function khoaNgang() { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => { }); } catch (e) { } }
+document.addEventListener('fullscreenchange', () => { if (dangFull()) khoaNgang(); setTimeout(resize, 120); setTimeout(resize, 600); });
+document.addEventListener('webkitfullscreenchange', () => { setTimeout(resize, 120); setTimeout(resize, 600); });
+function goiYiOS() {           // iPhone: nhắc "Thêm vào Màn hình chính" hai lần đầu
+  if (!LA_IOS || cheDoApp()) return;
+  let n = 0; try { n = +localStorage.getItem('ego3d_ios') || 0; } catch (e) { }
+  if (n >= 2) return;
+  $('iosTip').classList.add('hien');
+  $('iosTipDong').onclick = () => { $('iosTip').classList.remove('hien'); try { localStorage.setItem('ego3d_ios', n + 1); } catch (e) { } };
 }
 function hienHuongDan(bat) {
   $('huongDanLop').classList.toggle('hien', bat);
@@ -1109,7 +1155,7 @@ window.addEventListener('pointerup', (e) => { if (tt === 'sanh' && vuotX !== nul
 // --- cảm ứng: cần điều khiển + nút ---
 function batCamUng() { DV.camUng = true; document.body.classList.add('cam'); }
 if (CAM_UNG) batCamUng();
-window.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') batCamUng(); }, true);
+window.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') { batCamUng(); tuBatToanManHinh(); } }, true);
 (function () {
   const vung = $('joyVung'), goc = $('joyGoc'), nut = $('joyNut');
   const bk = () => Math.min(innerWidth * 0.01, innerHeight * 0.018) * 6.5;
@@ -1653,6 +1699,7 @@ function capNhatHUD(ep) {
     const cs = NG.chieuCd > 0 ? 'hồi ' + Math.ceil(NG.chieuCd) + ' giây' : 'SẴN SÀNG';
     $('nangCh').textContent = NG.nang >= 100 && NG.tt <= 0 ? '⚡ THỨC TỈNH sẵn sàng (F)' : 'Chiêu ' + NG.nv.chieu.ten + ': ' + cs;
     const hoi = document.querySelector('#cChieu .hoi'); if (hoi) hoi.style.height = (NG.chieuCd / GIAY_HOI_CHIEU * 100) + '%';
+    $('cTT').classList.toggle('san', NG.nang >= 100 && NG.tt <= 0);
   }
 }
 
@@ -1714,7 +1761,7 @@ function datCamera(dt, che) {
     fx = kep(fx, -(SAN_DAI - 9), SAN_DAI - 9); fz *= 0.5;
     const k = 1 - Math.exp(-dt * 5);
     if (camMoi) { camX = fx; camZ = fz; camMoi = false; } else { camX += (fx - camX) * k; camZ += (fz - camZ) * k; }
-    const rong = asp > 1.9 ? 0.86 : 1, Z = zoom * ak * rong; px = camX; py = 21 * zoom * Math.min(ak, 1.3) * rong; pz = camZ + 24 * Z; lx = camX; ly = 0.4; lz = camZ - 1;
+    const rong = (asp > 1.9 ? 0.86 : 1) * (DV.camUng ? 0.9 : 1), Z = zoom * ak * rong; px = camX; py = 21 * zoom * Math.min(ak, 1.3) * rong; pz = camZ + 24 * Z; lx = camX; ly = 0.4; lz = camZ - 1;
   }
   vtCam.set(px, py, pz);
   if (che !== 'sanh' && che !== 'ketqua' && che !== 'nhapsan' && che !== 'replay') camera.position.lerp(vtCam, 1 - Math.exp(-dt * 9)); else camera.position.copy(vtCam);

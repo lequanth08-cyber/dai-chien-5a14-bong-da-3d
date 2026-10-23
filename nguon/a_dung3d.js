@@ -103,6 +103,8 @@ anhMat.shadow.camera.top = 26; anhMat.shadow.camera.bottom = -26;
 anhMat.shadow.camera.near = 5; anhMat.shadow.camera.far = 90;
 anhMat.shadow.bias = -0.0006;
 scene.add(anhMat); scene.add(anhMat.target);
+const anhPhu = new THREE.DirectionalLight(0x9ec8ff, 0.4);   // đèn phụ lạnh từ phía sau cho nhân vật có viền sáng
+anhPhu.position.set(-30, 22, -20); scene.add(anhPhu);
 
 // ===================== SÂN CỎ =====================
 function taoSan() {
@@ -235,6 +237,11 @@ function taoKhanDai() {
     bangDen.position.set(sx * (SAN_DAI + 16), 27, sz * (SAN_RONG + 12)); bangDen.lookAt(0, 8, 0); scene.add(bangDen);
     const quang = new THREE.Sprite(new THREE.SpriteMaterial({ map: texTron, color: 0xfff2c0, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0.75 }));
     quang.scale.set(20, 20, 1); quang.position.copy(bangDen.position); scene.add(quang);
+    // chùm sáng mờ từ đèn pha rọi xuống sân
+    const dich = new THREE.Vector3(sx * 8, 0, sz * 5), huong = dich.clone().sub(bangDen.position), dai = huong.length(); huong.normalize();
+    const chum = new THREE.Mesh(new THREE.ConeGeometry(15, dai, 20, 1, true), new THREE.MeshBasicMaterial({ color: 0xfff1c0, transparent: true, opacity: 0.04, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }));
+    chum.position.copy(bangDen.position).addScaledVector(huong, dai / 2);
+    chum.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), huong); scene.add(chum);
   }
   // bầu trời có sao
   const sky = new THREE.Mesh(new THREE.SphereGeometry(220, 24, 12), new THREE.MeshBasicMaterial({

@@ -68,14 +68,14 @@ function dungSanh() {
   nhom('chonKho', 'kho'); nhom('chonGio', 'gio', Number); nhom('chonMung', 'mung');
   capMauGiay();
   $('muiTrai').onclick = () => chonNV(CH.nv - 1); $('muiPhai').onclick = () => chonNV(CH.nv + 1);
-  $('nutTim').onclick = () => { moAmThanh(); tieng('coi'); batDauGhep(); };
+  $('nutTim').onclick = () => { tuBatToanManHinh(); moAmThanh(); tieng('coi'); $('iosTip').classList.remove('hien'); batDauGhep(); };
   $('nutAm').onclick = () => { tatAm = !tatAm; try { localStorage.setItem('ego3d_tat', tatAm ? '1' : '0'); } catch (e) { } $('nutAm').textContent = tatAm ? '🔇' : '🔊'; moAmThanh(); };
   $('nutAm').textContent = tatAm ? '🔇' : '🔊';
   $('nutToan').onclick = toanManHinh; $('nutHD').onclick = () => hienHuongDan(true);
   $('hdDong').onclick = () => hienHuongDan(false);
   $('dungToan').onclick = toanManHinh; $('dungHD').onclick = () => hienHuongDan(true);
   if (window.matchMedia && (matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches || navigator.standalone)) { $('nutToan').style.display = 'none'; $('dungToan').style.display = 'none'; }
-  chonNV(CH.nv, true);
+  chonNV(CH.nv, true); goiYiOS();
 }
 function capMauGiay() {
   document.querySelectorAll('.mauGiay').forEach((b, i) => b.classList.toggle('dang', i === CH.giay));
@@ -91,6 +91,26 @@ function toanManHinh() {
     const kq = fn.call(el);
     if (kq && kq.then) kq.then(() => { try { screen.orientation.lock('landscape').catch(() => { }); } catch (e) { } }).catch(() => { toast('Trình duyệt này không cho bật toàn màn hình.'); });
   } catch (e) { toast('Trình duyệt này không cho bật toàn màn hình.'); }
+}
+// Nhận biết iPhone/iPad (Safari và Chrome trên iPhone đều không cho bật toàn màn hình bằng mã)
+const LA_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const dangFull = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+const cheDoApp = () => (window.matchMedia && (matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches)) || navigator.standalone === true;
+// Tự bật toàn màn hình ngay khi người chơi chạm hoặc bấm (Chrome, Edge, Android). Phải gọi trong lúc đang chạm thì trình duyệt mới cho.
+function tuBatToanManHinh() {
+  if (LA_IOS || dangFull() || cheDoApp()) return;
+  const el = document.documentElement, fn = el.requestFullscreen || el.webkitRequestFullscreen; if (!fn) return;
+  try { const kq = fn.call(el, { navigationUI: 'hide' }); if (kq && kq.catch) kq.catch(() => { }); } catch (e) { }
+}
+function khoaNgang() { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => { }); } catch (e) { } }
+document.addEventListener('fullscreenchange', () => { if (dangFull()) khoaNgang(); setTimeout(resize, 120); setTimeout(resize, 600); });
+document.addEventListener('webkitfullscreenchange', () => { setTimeout(resize, 120); setTimeout(resize, 600); });
+function goiYiOS() {           // iPhone: nhắc "Thêm vào Màn hình chính" hai lần đầu
+  if (!LA_IOS || cheDoApp()) return;
+  let n = 0; try { n = +localStorage.getItem('ego3d_ios') || 0; } catch (e) { }
+  if (n >= 2) return;
+  $('iosTip').classList.add('hien');
+  $('iosTipDong').onclick = () => { $('iosTip').classList.remove('hien'); try { localStorage.setItem('ego3d_ios', n + 1); } catch (e) { } };
 }
 function hienHuongDan(bat) {
   $('huongDanLop').classList.toggle('hien', bat);
@@ -240,7 +260,7 @@ window.addEventListener('pointerup', (e) => { if (tt === 'sanh' && vuotX !== nul
 // --- cảm ứng: cần điều khiển + nút ---
 function batCamUng() { DV.camUng = true; document.body.classList.add('cam'); }
 if (CAM_UNG) batCamUng();
-window.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') batCamUng(); }, true);
+window.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') { batCamUng(); tuBatToanManHinh(); } }, true);
 (function () {
   const vung = $('joyVung'), goc = $('joyGoc'), nut = $('joyNut');
   const bk = () => Math.min(innerWidth * 0.01, innerHeight * 0.018) * 6.5;
@@ -784,6 +804,7 @@ function capNhatHUD(ep) {
     const cs = NG.chieuCd > 0 ? 'hồi ' + Math.ceil(NG.chieuCd) + ' giây' : 'SẴN SÀNG';
     $('nangCh').textContent = NG.nang >= 100 && NG.tt <= 0 ? '⚡ THỨC TỈNH sẵn sàng (F)' : 'Chiêu ' + NG.nv.chieu.ten + ': ' + cs;
     const hoi = document.querySelector('#cChieu .hoi'); if (hoi) hoi.style.height = (NG.chieuCd / GIAY_HOI_CHIEU * 100) + '%';
+    $('cTT').classList.toggle('san', NG.nang >= 100 && NG.tt <= 0);
   }
 }
 
@@ -845,7 +866,7 @@ function datCamera(dt, che) {
     fx = kep(fx, -(SAN_DAI - 9), SAN_DAI - 9); fz *= 0.5;
     const k = 1 - Math.exp(-dt * 5);
     if (camMoi) { camX = fx; camZ = fz; camMoi = false; } else { camX += (fx - camX) * k; camZ += (fz - camZ) * k; }
-    const rong = asp > 1.9 ? 0.86 : 1, Z = zoom * ak * rong; px = camX; py = 21 * zoom * Math.min(ak, 1.3) * rong; pz = camZ + 24 * Z; lx = camX; ly = 0.4; lz = camZ - 1;
+    const rong = (asp > 1.9 ? 0.86 : 1) * (DV.camUng ? 0.9 : 1), Z = zoom * ak * rong; px = camX; py = 21 * zoom * Math.min(ak, 1.3) * rong; pz = camZ + 24 * Z; lx = camX; ly = 0.4; lz = camZ - 1;
   }
   vtCam.set(px, py, pz);
   if (che !== 'sanh' && che !== 'ketqua' && che !== 'nhapsan' && che !== 'replay') camera.position.lerp(vtCam, 1 - Math.exp(-dt * 9)); else camera.position.copy(vtCam);
