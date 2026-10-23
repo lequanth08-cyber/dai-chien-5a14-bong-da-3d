@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#070d28">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Đại Chiến 5A1.4">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Đại Chiến 5A1.4","short_name":"Đại Chiến","display":"fullscreen","orientation":"landscape","background_color":"%23050a1f","theme_color":"%23070d28","start_url":"."}'>
+<title>Đại Chiến 5A1.4 – Bóng đá 3D</title>
+<style>
+:root{
+  --u:min(1vw,1.8vh);
+  --tr:max(env(safe-area-inset-left,0px),1.5vw);
+  --ph:max(env(safe-area-inset-right,0px),1.5vw);
+  --tn:max(env(safe-area-inset-top,0px),1vh);
+  --du:max(env(safe-area-inset-bottom,0px),1vh);
+  --xanh:#2a7bff; --do:#ee3d48; --vang:#ffd23a; --nen:#0a1233;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#050a1f;color:#fff;
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+  overscroll-behavior:none}
+body{position:fixed;inset:0;height:100dvh}
+canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.lop{position:fixed;inset:0;pointer-events:none;display:none}
+.lop.hien{display:block}
+.lop button,.lop .bam{pointer-events:auto}
+.chu3d{font-weight:900;font-style:italic;letter-spacing:.04em;text-transform:uppercase}
+
+/* ===== SẢNH CHỜ ===== */
+#tieuDe{position:absolute;left:var(--tr);top:var(--tn);}
+#tieuDe h1{margin:0;font-size:calc(var(--u)*3.6);line-height:1;font-style:italic;font-weight:900;
+  background:linear-gradient(180deg,#fff 10%,#8fd0ff 60%,#2a7bff);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 calc(var(--u)*.7) rgba(60,150,255,.8));letter-spacing:.03em}
+#tieuDe p{margin:calc(var(--u)*.3) 0 0;font-size:calc(var(--u)*1.5);color:#9fc2ff;letter-spacing:.2em;text-transform:uppercase}
+.bang{background:linear-gradient(160deg,rgba(14,26,70,.82),rgba(8,14,40,.78));border:1px solid rgba(120,170,255,.35);
+  border-radius:calc(var(--u)*1.2);padding:calc(var(--u)*1.1);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  box-shadow:0 0 calc(var(--u)*2) rgba(30,90,255,.25) inset,0 calc(var(--u)*.4) calc(var(--u)*1.5) rgba(0,0,0,.4)}
+#sanhTrai{position:absolute;left:var(--tr);top:calc(var(--tn) + var(--u)*7);width:calc(var(--u)*27)}
+#nvTen{font-size:calc(var(--u)*3.6);line-height:1;margin:0}
+#nvVai{display:flex;flex-wrap:wrap;gap:calc(var(--u)*.6);align-items:center;margin:calc(var(--u)*.5) 0 calc(var(--u)*.8)}
+.nhan{display:inline-block;padding:calc(var(--u)*.25) calc(var(--u)*.8);border-radius:99px;font-size:calc(var(--u)*1.35);font-weight:800;background:#1d3d9a;border:1px solid #6aa0ff}
+.nhan.so{background:#ffd23a;color:#241a00;border-color:#fff3b0}
+.hang{display:grid;grid-template-columns:calc(var(--u)*6.5) 1fr calc(var(--u)*1.8);gap:calc(var(--u)*.5);align-items:center;font-size:calc(var(--u)*1.35);margin:calc(var(--u)*.45) 0}
+.thanh{height:calc(var(--u)*.9);background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
+.thanh i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#27c4ff,#7dff9a);transition:width .6s cubic-bezier(.2,.9,.3,1)}
+.hang.sut .thanh i{background:linear-gradient(90deg,#ff9a3a,#ffe14a)}
+.hang.pn .thanh i{background:linear-gradient(90deg,#a46bff,#4aa0ff)}
+#nvMoTa{font-size:calc(var(--u)*1.4);line-height:1.35;color:#cfe0ff;margin:calc(var(--u)*.7) 0}
+#nvChieu{border-top:1px dashed rgba(140,180,255,.4);padding-top:calc(var(--u)*.7);font-size:calc(var(--u)*1.35);line-height:1.3;color:#cfe0ff}
+#nvChieu b{display:block;color:var(--vang);font-size:calc(var(--u)*1.7);text-transform:uppercase;font-style:italic}
+#sanhPhai{position:absolute;right:var(--ph);top:calc(var(--tn) + var(--u)*1);width:calc(var(--u)*25)}
+.nhomChon{margin-bottom:calc(var(--u)*.9)}
+.nhomChon label{display:block;font-size:calc(var(--u)*1.2);color:#9fc2ff;letter-spacing:.12em;text-transform:uppercase;margin-bottom:calc(var(--u)*.35)}
+.hangNut{display:flex;gap:calc(var(--u)*.45)}
+.chon{flex:1;padding:calc(var(--u)*.6) 0;font:inherit;font-size:calc(var(--u)*1.4);font-weight:800;color:#cfe0ff;
+  background:rgba(255,255,255,.08);border:1px solid rgba(150,190,255,.35);border-radius:calc(var(--u)*.8);cursor:pointer}
+.chon.dang{background:linear-gradient(180deg,#3d8bff,#1f55d6);color:#fff;border-color:#bcd7ff;box-shadow:0 0 calc(var(--u)*1.2) rgba(60,140,255,.7)}
+.mauGiay{flex:none;width:calc(var(--u)*3.6);height:calc(var(--u)*3.6);border-radius:50%;border:3px solid transparent;cursor:pointer;padding:0}
+.mauGiay.dang{border-color:#fff;box-shadow:0 0 calc(var(--u)*1) #fff}
+#nutTim{display:block;width:100%;margin-top:calc(var(--u)*.4);padding:calc(var(--u)*1.1) 0;font:inherit;font-size:calc(var(--u)*2.4);font-weight:900;font-style:italic;
+  letter-spacing:.06em;color:#241a00;background:linear-gradient(180deg,#fff08a,#ffb62e);border:0;border-radius:calc(var(--u)*1.2);cursor:pointer;
+  box-shadow:0 calc(var(--u)*.4) 0 #b36a00,0 0 calc(var(--u)*2) rgba(255,190,50,.8);animation:nhip 1.4s ease-in-out infinite}
+#nutTim:active{transform:translateY(calc(var(--u)*.3))}
+@keyframes nhip{50%{filter:brightness(1.25);box-shadow:0 calc(var(--u)*.4) 0 #b36a00,0 0 calc(var(--u)*3) rgba(255,210,80,1)}}
+.mui{position:absolute;top:44%;width:calc(var(--u)*5);height:calc(var(--u)*5);border-radius:50%;border:2px solid #9fc2ff;background:rgba(10,24,70,.7);
+  color:#fff;font-size:calc(var(--u)*2.6);font-weight:900;cursor:pointer;display:grid;place-items:center;padding:0}
+#muiTrai{left:calc(var(--tr) + var(--u)*29.5)} #muiPhai{right:calc(var(--ph) + var(--u)*27)}
+#theNV{position:absolute;left:50%;transform:translateX(-50%);bottom:var(--du);display:flex;gap:calc(var(--u)*.7)}
+.the{width:calc(var(--u)*6.6);padding:calc(var(--u)*.4) 0 calc(var(--u)*.3);text-align:center;border-radius:calc(var(--u)*1);cursor:pointer;
+  background:rgba(8,16,48,.78);border:2px solid rgba(140,180,255,.35);font-size:calc(var(--u)*1.15);font-weight:800;color:#cfe0ff}
+.the.dang{border-color:var(--vang);background:rgba(60,48,0,.78);box-shadow:0 0 calc(var(--u)*1.4) rgba(255,210,60,.7);color:#fff;transform:translateY(calc(var(--u)*-.5))}
+.avatar{width:calc(var(--u)*4.4);height:calc(var(--u)*4.4);margin:0 auto calc(var(--u)*.2);border-radius:50%;display:grid;place-items:center;
+  font-size:calc(var(--u)*2.2);font-weight:900;color:#fff;border:2px solid rgba(255,255,255,.7);text-shadow:0 1px 3px rgba(0,0,0,.6)}
+#nutAm{position:absolute;right:var(--ph);bottom:var(--du);width:calc(var(--u)*4.4);height:calc(var(--u)*4.4);border-radius:50%;border:2px solid #9fc2ff;background:rgba(10,24,70,.7);color:#fff;font-size:calc(var(--u)*2);cursor:pointer;padding:0;display:grid;place-items:center}
+
+/* ===== GHÉP TRẬN ===== */
+#ghep{background:radial-gradient(ellipse at center,rgba(6,14,50,.82),rgba(2,6,22,.94))}
+#ghepTrong{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(var(--u)*78);text-align:center}
+#ghepTrong h2{margin:0 0 calc(var(--u)*1);font-size:calc(var(--u)*3);}
+.vong{width:calc(var(--u)*3.2);height:calc(var(--u)*3.2);border-radius:50%;border:4px solid rgba(255,255,255,.2);border-top-color:var(--vang);margin:0 auto calc(var(--u)*.8);animation:quay 1s linear infinite}
+@keyframes quay{to{transform:rotate(360deg)}}
+.haiDoi{display:grid;grid-template-columns:1fr calc(var(--u)*5) 1fr;gap:calc(var(--u)*1);align-items:center;margin-top:calc(var(--u)*1.2)}
+.doiCot{border-radius:calc(var(--u)*1.2);padding:calc(var(--u)*1);border:2px solid}
+.doiCot.x{border-color:var(--xanh);background:rgba(30,80,200,.25)} .doiCot.d{border-color:var(--do);background:rgba(200,40,60,.22)}
+.doiCot h3{margin:0 0 calc(var(--u)*.6);font-size:calc(var(--u)*1.8)}
+.o{display:flex;align-items:center;gap:calc(var(--u)*.8);height:calc(var(--u)*4.2);margin:calc(var(--u)*.3) 0;padding:0 calc(var(--u)*.8);border-radius:calc(var(--u)*.9);background:rgba(0,0,0,.35);font-size:calc(var(--u)*1.65);font-weight:800;text-align:left}
+.o .avatar{margin:0;width:calc(var(--u)*3.2);height:calc(var(--u)*3.2);font-size:calc(var(--u)*1.6);flex:none}
+.o.cho{opacity:.55;color:#9fb4e8;font-weight:600}
+.o .tick{margin-left:auto;color:#53ff8f;font-size:calc(var(--u)*2.2)}
+.vsx{font-size:calc(var(--u)*3);font-weight:900;font-style:italic;color:var(--vang)}
+#ghepSan{margin-top:calc(var(--u)*1);font-size:calc(var(--u)*2.6);color:var(--vang);min-height:calc(var(--u)*3)}
+
+/* ===== HUD ===== */
+#bang{position:absolute;left:50%;top:var(--tn);transform:translateX(-50%);display:flex;align-items:stretch;border-radius:calc(var(--u)*1.2);overflow:hidden;
+  box-shadow:0 calc(var(--u)*.3) calc(var(--u)*1.2) rgba(0,0,0,.5);font-weight:900}
+#bang div{padding:calc(var(--u)*.45) calc(var(--u)*1.4);display:flex;align-items:center;gap:calc(var(--u)*.7)}
+#bangX{background:linear-gradient(180deg,#3d8bff,#1d4fd0);font-size:calc(var(--u)*1.4)}
+#bangD{background:linear-gradient(180deg,#ff5a66,#c92336);font-size:calc(var(--u)*1.4)}
+#bangG{background:#0b1030;flex-direction:column;justify-content:center;min-width:calc(var(--u)*9);gap:0!important;padding:calc(var(--u)*.2) calc(var(--u)*1) !important}
+#bangG b{font-size:calc(var(--u)*2.8);line-height:1.05;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+#bangG span{font-size:calc(var(--u)*1.1);color:#ffd23a;font-weight:800;line-height:1}
+.so2{font-size:calc(var(--u)*3);font-variant-numeric:tabular-nums}
+#nang{position:absolute;left:var(--tr);top:var(--tn);width:calc(var(--u)*24)}
+#nangTen{font-size:calc(var(--u)*1.5);font-weight:900;text-shadow:0 1px 4px #000}
+.ong{height:calc(var(--u)*1.3);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.35);border-radius:99px;overflow:hidden;margin-top:calc(var(--u)*.35)}
+.ong i{display:block;height:100%;width:0;background:linear-gradient(90deg,#27c4ff,#b3f0ff)}
+#nangTT i{background:linear-gradient(90deg,#ff7a1a,#ffe14a)} #nangTT.day{animation:nhip2 .6s ease-in-out infinite}
+@keyframes nhip2{50%{filter:brightness(1.6)}}
+#nangCh{font-size:calc(var(--u)*1.15);color:#cfe0ff;margin-top:calc(var(--u)*.3)}
+#nutDung{position:absolute;right:var(--ph);top:var(--tn);width:calc(var(--u)*4.4);height:calc(var(--u)*4.4);border-radius:50%;border:2px solid rgba(255,255,255,.6);background:rgba(10,24,70,.6);color:#fff;font-size:calc(var(--u)*1.9);padding:0;cursor:pointer;display:grid;place-items:center}
+#thongBao{position:absolute;left:50%;top:36%;transform:translate(-50%,-50%) scale(1);font-size:calc(var(--u)*9);font-weight:900;font-style:italic;text-align:center;
+  background:linear-gradient(180deg,#fff,#ffe36a 60%,#ff9d1a);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 calc(var(--u)*.5) 0 rgba(120,50,0,.9)) drop-shadow(0 0 calc(var(--u)*2) rgba(255,190,50,.8));white-space:nowrap;opacity:0;pointer-events:none}
+#thongBao.no{animation:no .9s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes no{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-8deg)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(-3deg)}100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-3deg)}}
+#thongBao.nho{font-size:calc(var(--u)*4)}
+#demNguoc{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-size:calc(var(--u)*16);font-weight:900;font-style:italic;color:#fff;
+  text-shadow:0 0 calc(var(--u)*3) #3aa0ff,0 calc(var(--u)*.6) 0 #1a40a0;opacity:0;pointer-events:none}
+#demNguoc.dap{animation:dap .9s ease-out forwards}
+@keyframes dap{0%{opacity:0;transform:translate(-50%,-50%) scale(2.2)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(.7)}}
+#chop{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none}
+#gongBar{position:absolute;width:calc(var(--u)*7);height:calc(var(--u)*.9);margin-left:calc(var(--u)*-3.5);background:rgba(0,0,0,.6);border:1px solid #fff;border-radius:99px;overflow:hidden;display:none}
+#gongBar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4cff7a,#ffe14a,#ff4a3a)}
+#xemLai{position:absolute;left:var(--tr);top:calc(var(--tn) + var(--u)*8);padding:calc(var(--u)*.5) calc(var(--u)*1.5);background:#e22;font-weight:900;font-size:calc(var(--u)*2.2);border-radius:calc(var(--u)*.6);letter-spacing:.14em;display:none;animation:nhip2 .8s infinite}
+#chat{position:absolute;left:50%;bottom:calc(var(--du) + var(--u)*1);transform:translateX(-50%);font-size:calc(var(--u)*1.3);color:#cfe0ff;opacity:.85;text-align:center;text-shadow:0 1px 3px #000;white-space:nowrap}
+body.cam #chat{display:none}
+
+/* ===== CẢM ỨNG ===== */
+#cam{display:none}
+body.cam #cam.hien{display:block}
+#joyVung{position:absolute;left:0;top:18%;width:48%;bottom:0;pointer-events:auto;touch-action:none}
+#joyGoc{position:absolute;width:calc(var(--u)*13);height:calc(var(--u)*13);margin:calc(var(--u)*-6.5) 0 0 calc(var(--u)*-6.5);border-radius:50%;border:2px solid rgba(255,255,255,.55);background:rgba(255,255,255,.1);display:none;pointer-events:none}
+#joyNut{position:absolute;left:50%;top:50%;width:calc(var(--u)*6);height:calc(var(--u)*6);margin:calc(var(--u)*-3) 0 0 calc(var(--u)*-3);border-radius:50%;background:rgba(255,255,255,.55);border:2px solid #fff}
+.nutCam{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.8);background:rgba(20,40,110,.62);color:#fff;font:inherit;font-weight:900;
+  display:grid;place-items:center;text-align:center;line-height:1.05;pointer-events:auto;touch-action:none;padding:0;overflow:hidden;font-size:calc(var(--u)*1.35)}
+.nutCam.an{background:rgba(255,255,255,.5)}
+.nutCam .hoi{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);height:0}
+#cSut{right:calc(var(--ph) + var(--u)*1);bottom:calc(var(--du) + var(--u)*1);width:calc(var(--u)*13);height:calc(var(--u)*13);background:rgba(220,50,50,.65);font-size:calc(var(--u)*2.2)}
+#cChuyen{right:calc(var(--ph) + var(--u)*15);bottom:calc(var(--du) + var(--u)*1);width:calc(var(--u)*9);height:calc(var(--u)*9);background:rgba(40,130,255,.65)}
+#cTac{right:calc(var(--ph) + var(--u)*13);bottom:calc(var(--du) + var(--u)*11);width:calc(var(--u)*8.5);height:calc(var(--u)*8.5);background:rgba(40,160,90,.65)}
+#cChieu{right:calc(var(--ph) + var(--u)*2);bottom:calc(var(--du) + var(--u)*15);width:calc(var(--u)*8.5);height:calc(var(--u)*8.5);background:rgba(160,70,255,.65)}
+#cTT{right:calc(var(--ph) + var(--u)*24);bottom:calc(var(--du) + var(--u)*3);width:calc(var(--u)*8);height:calc(var(--u)*8);background:rgba(255,150,30,.65)}
+#cLach{right:calc(var(--ph) + var(--u)*23);bottom:calc(var(--du) + var(--u)*12.5);width:calc(var(--u)*7.5);height:calc(var(--u)*7.5);background:rgba(40,190,200,.6)}
+
+/* ===== HỘP THOẠI ===== */
+.hop{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(var(--u)*62);max-height:92%;overflow:auto;text-align:center;pointer-events:auto}
+.hop h2{margin:0 0 calc(var(--u)*.8);font-size:calc(var(--u)*4)}
+.nutLon{display:inline-block;margin:calc(var(--u)*.5);padding:calc(var(--u)*.9) calc(var(--u)*2.6);font:inherit;font-size:calc(var(--u)*1.9);font-weight:900;color:#fff;border:0;border-radius:calc(var(--u)*1.1);
+  background:linear-gradient(180deg,#3d8bff,#1d4fd0);box-shadow:0 calc(var(--u)*.3) 0 #0d2a80;cursor:pointer}
+.nutLon.vang{background:linear-gradient(180deg,#fff08a,#ffb62e);color:#241a00;box-shadow:0 calc(var(--u)*.3) 0 #b36a00}
+#ketQuaLop,#dungLop,#xoayLop{background:rgba(2,6,22,.82)}
+#bangKQ{width:100%;border-collapse:collapse;font-size:calc(var(--u)*1.5);margin:calc(var(--u)*.8) 0}
+#bangKQ th{color:#9fc2ff;font-weight:700;padding:calc(var(--u)*.3)}
+#bangKQ td{padding:calc(var(--u)*.35);border-top:1px solid rgba(255,255,255,.12)}
+#bangKQ tr.mvp td{background:rgba(255,210,60,.18);font-weight:900;color:#fff4b0}
+.ketQuaTo{font-size:calc(var(--u)*7);font-weight:900;font-style:italic;line-height:1}
+.diemTo{font-size:calc(var(--u)*5);font-weight:900;margin:calc(var(--u)*.3) 0}
+#xoayLop{display:none;z-index:50;pointer-events:auto;place-items:center;text-align:center;font-size:calc(var(--u)*2.4);font-weight:800}
+@media (orientation:portrait) and (max-width:600px) and (pointer:coarse){#xoayLop{display:grid;position:fixed;inset:0;z-index:99;background:#050a1f}}
+#xoayLop .dt{font-size:12vw;animation:xoay 2s ease-in-out infinite}
+@keyframes xoay{0%,30%{transform:rotate(0)}70%,100%{transform:rotate(-90deg)}}
+.nhan.lopHoc{background:#0d6b45;border-color:#59e0a0}
+.nutNho{position:absolute;bottom:var(--du);width:calc(var(--u)*4.4);height:calc(var(--u)*4.4);border-radius:50%;border:2px solid #9fc2ff;background:rgba(10,24,70,.7);color:#fff;font-size:calc(var(--u)*2);font-weight:900;cursor:pointer;padding:0;display:grid;place-items:center;pointer-events:auto}
+#nutHD{right:calc(var(--ph) + var(--u)*5.2)} #nutToan{right:calc(var(--ph) + var(--u)*10.4)}
+#radar{position:absolute;right:var(--ph);top:calc(var(--tn) + var(--u)*5.6);width:calc(var(--u)*19);height:calc(var(--u)*11.4);border-radius:calc(var(--u)*.6);background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.45);opacity:.92}
+#muiBong{position:absolute;display:none;width:calc(var(--u)*3.4);height:calc(var(--u)*3.4);margin:0;border-radius:50%;background:#fff;color:#e22;font-size:calc(var(--u)*1.8);line-height:calc(var(--u)*3.4);text-align:center;box-shadow:0 0 calc(var(--u)*1.2) #fff;pointer-events:none;z-index:3}
+#goiY{position:absolute;left:50%;bottom:calc(var(--du) + var(--u)*.8);transform:translateX(-50%);max-width:60%;font-size:calc(var(--u)*1.4);color:#fff;background:rgba(0,0,0,.45);padding:calc(var(--u)*.4) calc(var(--u)*1.2);border-radius:99px;text-align:center;text-shadow:0 1px 3px #000;pointer-events:none;opacity:0;transition:opacity .4s}
+#toast{position:fixed;left:50%;top:14%;transform:translateX(-50%);max-width:80%;background:rgba(10,20,60,.95);border:2px solid #9fc2ff;border-radius:calc(var(--u)*1.2);padding:calc(var(--u)*1) calc(var(--u)*2);font-size:calc(var(--u)*1.7);font-weight:700;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s;z-index:60}
+#toast.hien{opacity:1}
+#huongDanLop{z-index:40}
+#huongDanLop.hien{display:block;background:rgba(2,6,22,.75)}
+#bangKQ.ket10 td{padding:calc(var(--u)*.2) calc(var(--u)*.3);font-size:calc(var(--u)*1.3)}
+#bangKQ.ket10 th{font-size:calc(var(--u)*1.2)}
+@media (max-height:340px){#tieuDe p{display:none}#nvMoTa{display:none}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="chop"></div>
+
+<!-- SẢNH CHỜ -->
+<div id="sanh" class="lop">
+  <div id="tieuDe"><h1>ĐẠI CHIẾN 5A1.4</h1><p>Bóng đá 3D · 3 đấu 3</p></div>
+  <div id="sanhTrai" class="bang">
+    <h2 id="nvTen" class="chu3d">Ebuka</h2>
+    <div id="nvVai"><span class="nhan" id="nvVaiTro">Tiền đạo</span><span class="nhan so" id="nvSo">#10</span><span class="nhan lopHoc" id="nvLop">Lớp 5A1.4</span></div>
+    <div class="hang"><span>Tốc độ</span><div class="thanh"><i id="bToc"></i></div><b id="vToc">8</b></div>
+    <div class="hang sut"><span>Sút</span><div class="thanh"><i id="bSut"></i></div><b id="vSut">9</b></div>
+    <div class="hang pn"><span>Phòng thủ</span><div class="thanh"><i id="bPn"></i></div><b id="vPn">5</b></div>
+    <div id="nvMoTa"></div>
+    <div id="nvChieu"><b id="chieuTen"></b><span id="chieuMt"></span></div>
+  </div>
+  <button class="mui" id="muiTrai">◀</button>
+  <button class="mui" id="muiPhai">▶</button>
+  <div id="sanhPhai" class="bang">
+    <div class="nhomChon"><label>Mức khó</label><div class="hangNut" id="chonKho">
+      <button class="chon" data-v="de">Dễ</button><button class="chon dang" data-v="vua">Vừa</button><button class="chon" data-v="kho">Khó</button></div></div>
+    <div class="nhomChon"><label>Thời gian</label><div class="hangNut" id="chonGio">
+      <button class="chon" data-v="90">90 giây</button><button class="chon dang" data-v="180">3 phút</button></div></div>
+    <div class="nhomChon"><label>Ăn mừng</label><div class="hangNut" id="chonMung">
+      <button class="chon dang" data-v="nhay">Nhảy</button><button class="chon" data-v="xoay">Xoay</button><button class="chon" data-v="truot">Trượt</button></div></div>
+    <div class="nhomChon"><label>Màu giày</label><div class="hangNut" id="chonGiay"></div></div>
+    <button id="nutTim">TÌM TRẬN</button>
+  </div>
+  <div id="theNV"></div>
+  <button id="nutAm">🔊</button><button id="nutHD" class="nutNho">?</button><button id="nutToan" class="nutNho">⛶</button>
+</div>
+
+<!-- GHÉP TRẬN -->
+<div id="ghep" class="lop">
+  <div id="ghepTrong">
+    <div class="vong" id="ghepVong"></div>
+    <h2 class="chu3d" id="ghepTieu">Đang ghép trận…</h2>
+    <div class="haiDoi">
+      <div class="doiCot x"><h3 class="chu3d" id="tenDoiX">Đội xanh</h3><div id="slotX"></div></div>
+      <div class="vsx">VS</div>
+      <div class="doiCot d"><h3 class="chu3d" id="tenDoiD">Đội đỏ</h3><div id="slotD"></div></div>
+    </div>
+    <div id="ghepSan" class="chu3d"></div>
+  </div>
+</div>
+
+<!-- HUD TRONG TRẬN -->
+<div id="hud" class="lop">
+  <div id="bang">
+    <div id="bangX"><span id="tenLopX">ĐỘI XANH</span><span class="so2" id="diemX">0</span></div>
+    <div id="bangG"><b id="dongHo">3:00</b><span id="giaiDoan">GIAO HỮU</span></div>
+    <div id="bangD"><span class="so2" id="diemD">0</span><span id="tenLopD">ĐỘI ĐỎ</span></div>
+  </div>
+  <div id="nang">
+    <div id="nangTen"></div>
+    <div class="ong" id="nangTT"><i id="nangTTi"></i></div>
+    <div id="nangCh"></div>
+  </div>
+  <button id="nutDung">⏸</button>
+  <div id="thongBao"></div>
+  <div id="demNguoc"></div>
+  <div id="xemLai">XEM LẠI</div>
+  <div id="gongBar"><i id="gongI"></i></div>
+  <canvas id="radar" width="228" height="136"></canvas>
+  <div id="muiBong">▶</div>
+  <div id="goiY"></div>
+</div>
+
+<!-- CẢM ỨNG -->
+<div id="cam" class="lop">
+  <div id="joyVung"><div id="joyGoc"><div id="joyNut"></div></div></div>
+  <button class="nutCam" id="cSut">SÚT</button>
+  <button class="nutCam" id="cChuyen">CHUYỀN</button>
+  <button class="nutCam" id="cTac">TẮC</button>
+  <button class="nutCam" id="cChieu">CHIÊU<div class="hoi"></div></button>
+  <button class="nutCam" id="cTT">THỨC<br>TỈNH</button>
+  <button class="nutCam" id="cLach">LÁCH</button>
+</div>
+
+<!-- KẾT QUẢ -->
+<div id="ketQuaLop" class="lop"><div class="hop bang" id="ketQuaHop"></div></div>
+<div id="dungLop" class="lop"><div class="hop bang">
+  <h2 class="chu3d" id="dungTieu">Tạm dừng</h2><p id="dungChu" style="font-size:calc(var(--u)*1.8);margin:0 0 1em"></p>
+  <button class="nutLon vang" id="dungTiep">Chơi tiếp</button>
+  <button class="nutLon" id="dungHD">Cách chơi</button><button class="nutLon" id="dungToan">Toàn màn hình</button>
+  <button class="nutLon" id="dungVe">Về sảnh</button>
+</div></div>
+<div id="toast"></div>
+<div id="huongDanLop" class="lop"><div class="hop bang">
+  <h2 class="chu3d">Cách chơi</h2>
+  <div id="hdPhim" style="text-align:left;font-size:calc(var(--u)*1.55);line-height:1.5">
+    <b>Chạy:</b> phím W A S D hoặc mũi tên<br>
+    <b>Sút:</b> giữ chuột trái rồi thả (giữ càng lâu bóng càng mạnh), bóng bay về phía con trỏ<br>
+    <b>Chuyền:</b> chuột phải, bóng đi tới bạn cùng đội ở hướng con trỏ<br>
+    <b>Tắc bóng:</b> Shift khi đứng gần người đang giữ bóng<br>
+    <b>Chiêu đặc trưng:</b> Q · <b>Thức tỉnh:</b> F khi thanh năng lượng đầy<br>
+    <b>Hất bóng:</b> phím Cách · <b>Lách:</b> R · <b>Xoay người:</b> T · <b>Tạm dừng:</b> Esc
+  </div>
+  <div id="hdCam" style="text-align:left;font-size:calc(var(--u)*1.55);line-height:1.5;display:none">
+    <b>Chạy:</b> kéo ngón tay ở nửa trái màn hình<br>
+    <b>SÚT:</b> giữ nút đỏ rồi thả (giữ càng lâu bóng càng mạnh)<br>
+    <b>CHUYỀN:</b> chuyền cho bạn cùng đội ở hướng đang chạy<br>
+    <b>TẮC:</b> lấy bóng của đối thủ khi đứng gần<br>
+    <b>CHIÊU:</b> chiêu riêng của nhân vật · <b>THỨC TỈNH:</b> bấm khi thanh năng lượng đầy<br>
+    <b>LÁCH:</b> lướt nhanh qua người
+  </div>
+  <p style="font-size:calc(var(--u)*1.4);color:#cfe0ff;margin:.6em 0">Mẹo: sút gần khung thành thì game tự ngắm giúp bạn. Đội xanh luôn là đội của bạn, mỗi đội có 5 cầu thủ.</p>
+  <button class="nutLon vang" id="hdDong">Đã hiểu</button>
+</div></div>
+<div id="xoayLop"><div><div class="dt">📱</div>Hãy xoay ngang điện thoại<br>để chơi nhé!</div></div>
+
+<script>/*THREE_JS*/</script>
+<script>/*GAME_JS*/</script>
+</body>
+</html>

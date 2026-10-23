@@ -1,0 +1,10 @@
+const fs=require('fs');
+const khung=fs.readFileSync('khung.html','utf8');
+const three=fs.readFileSync('three.min.js','utf8');
+if(three.includes('</script')) throw new Error('three chua </script');
+const game=['d_anh.js','a_dung3d.js','b_nhanvat.js','c_luatchoi.js'].map(f=>fs.readFileSync(f,'utf8')).join('\n');
+if(game.includes('</script')) throw new Error('game chua </script');
+let out=khung.replace('/*THREE_JS*/',()=>three).replace('/*GAME_JS*/',()=>game);
+fs.writeFileSync('../ego3d.html',out);
+fs.writeFileSync('game_gop.js',game);
+console.log('ego3d.html',(out.length/1024).toFixed(0)+' KB');
