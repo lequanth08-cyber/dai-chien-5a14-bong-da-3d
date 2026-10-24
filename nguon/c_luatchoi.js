@@ -659,7 +659,7 @@ function buocBong(h) {
   } else { const kh = Math.exp(-0.06 * h); B.vx *= kh; B.vz *= kh; }
   B.quayX += B.vz * h * 2.6; B.quayZ -= B.vx * h * 2.6;
   if (B.passerT > 0) B.passerT -= h;
-  if (B.cauVongT > 0) { B.cauVongT -= h; const o = B.cauVong; if (o) { const tx = o.x + Math.sin(o.ang) * 1.1, tz = o.z + Math.cos(o.ang) * 1.1, k = Math.min(1, h * 6); B.vx += ((tx - B.x) * 4 - B.vx) * k; B.vz += ((tz - B.z) * 4 - B.vz) * k; } }   // bóng cầu vồng bay theo người hất, rơi đúng chân
+  if (B.cauVongT > 0) { B.cauVongT -= h; const o = B.cauVong; if (o) { const tx = o.x + Math.sin(o.ang) * 1.1, tz = o.z + Math.cos(o.ang) * 1.1, k = Math.min(1, h * 6); B.vx += ((tx - B.x) * 5 + o.vx - B.vx) * k; B.vz += ((tz - B.z) * 5 + o.vz - B.vz) * k; } }   // bóng cầu vồng bay theo người hất, rơi đúng chân
   // hàng rào hai bên
   const ZL = SAN_RONG + 0.35 - BONG_R;
   if (B.z > ZL) { B.z = ZL; B.vz = -Math.abs(B.vz) * 0.7; if (Math.abs(B.vz) > 3) tieng('nay'); }
