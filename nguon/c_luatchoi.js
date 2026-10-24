@@ -10,7 +10,7 @@ if (!MUC_KHO[CH.kho]) CH.kho = 'de';
 function luuCH() { try { localStorage.setItem('ego3d_cfg2', JSON.stringify(CH)); } catch (e) { } }
 let tongGiayChoi = 0, daNhacMat = false, gioThuc = 0;
 
-const B = { x: 0, y: BONG_R, z: 0, vx: 0, vy: 0, vz: 0, chu: null, cong: 0, congT: 0, sieu: false, daThu: false, cuoiCham: null, passer: null, passerT: 0, nhan: null, quayX: 0, quayZ: 0 };
+const B = { x: 0, y: BONG_R, z: 0, vx: 0, vy: 0, vz: 0, chu: null, cong: 0, congT: 0, sieu: false, daThu: false, cuoiCham: null, passer: null, passerT: 0, nhan: null, quayX: 0, quayZ: 0, xuyen: false };
 let CT = [], NG = null;                 // CT = 6 cầu thủ, NG = cầu thủ của người chơi
 const diem = [0, 0];
 let thoiGian = 180, vang = false, doiTran = null, ghibanT = 0, chuyenSanT = 0, demT = 0, nhapSanT = 0, doiBatDau = 0;
@@ -44,7 +44,7 @@ function chonNV(i, khongAm) {
   const nv = NHAN_VAT[i];
   sanhMH.forEach((m, k) => { m.goc.visible = (k === i); });
   $('nvTen').textContent = nv.ten; $('nvVaiTro').textContent = nv.vai; $('nvSo').textContent = '#' + nv.so; $('nvLop').textContent = 'Lớp ' + nv.lop;
-  for (const [id, v] of [['Toc', nv.toc], ['Sut', nv.sut], ['Pn', nv.pn]]) { $('b' + id).style.width = (v * 10) + '%'; $('v' + id).textContent = v; }
+  for (const [id, v] of [['Toc', nv.toc], ['Sut', nv.sut], ['Pn', nv.pn], ['Ch', nv.chuyen], ['Re', nv.re], ['The', nv.the]]) { $('b' + id).style.width = (v * 10) + '%'; $('v' + id).textContent = v; }
   $('nvMoTa').textContent = nv.mota; $('chieuTen').textContent = nv.chieu.ten; $('chieuMt').textContent = nv.chieu.mt;
   document.querySelectorAll('.the').forEach((e, k) => e.classList.toggle('dang', k === i));
   sanhPop = 0.5; chopT = 0.35; sanhMungT = 0;
@@ -123,12 +123,13 @@ function chiaDoi() {       // bạn chọn ai thì đá cho lớp của người
   tenA = NHAN_VAT[CH.nv].lop; tenB = tenA === '5A1.4' ? '5A2.4' : '5A1.4';
   doiA = [CH.nv].concat(DOI_LOP[tenA].filter(i => i !== CH.nv)); doiB = DOI_LOP[tenB].slice();
 }
-function chiaVai(ds) {     // mỗi đội: 1 thủ môn, 2 hậu vệ, 2 tiền đạo
+function chiaVai(ds) {     // mỗi đội: 1 thủ môn + hậu vệ + tiền đạo; làn (-1 trái, 0 giữa, 1 phải) chia theo số người
   const tm = ds.find(i => NHAN_VAT[i].vt === 'tm');
   const hv = ds.filter(i => NHAN_VAT[i].vt === 'hv'), td = ds.filter(i => NHAN_VAT[i].vt === 'tdao');
+  const lan = (n, k) => n === 1 ? 0 : n === 2 ? (k ? 1 : -1) : [-1, 1, 0][k % 3];
   return [{ idx: tm, vt: 'tm', lane: 0 }]
-    .concat(hv.map((i, k) => ({ idx: i, vt: 'hv', lane: k ? 1 : -1 })))
-    .concat(td.map((i, k) => ({ idx: i, vt: 'tdao', lane: k ? 1 : -1 })));
+    .concat(hv.map((i, k) => ({ idx: i, vt: 'hv', lane: lan(hv.length, k) })))
+    .concat(td.map((i, k) => ({ idx: i, vt: 'tdao', lane: lan(td.length, k) })));
 }
 function oGhep(i, cho) {
   const nv = NHAN_VAT[i];
@@ -166,7 +167,7 @@ function taoTran() {
     const p = {
       doi, nv, idx: v.idx, vt: v.vt, lane: v.lane, nguoi: minh, mh, x: 0, z: 0, vx: 0, vz: 0, ang: 0, phase: Math.random() * 6, spd: 0,
       kick: 0, truot: 0, dive: 0, diveDir: 1, stun: 0, gong: 0, nhanCd: 0, tacCd: 0, chieuCd: 0, tt: 0, nang: 0, lachCd: 0, xoayCd: 0, xoayAnim: 0,
-      buff: { sam: 0, tay: 0, khien: 0, toc: 0, cong: 0 }, giu: 0, giuHold: 0, coBongT: 0, mung: null, mungT: 0, ny: 0, xoayNguoi: 0,
+      buff: { sam: 0, tay: 0, khien: 0, toc: 0, cong: 0, xuyen: 0 }, giu: 0, giuHold: 0, coBongT: 0, mung: null, mungT: 0, ny: 0, xoayNguoi: 0,
       dashT: 0, dashX: 0, dashZ: 0, dashV: 0, tacXong: false, auraT: 0, sx: 0, sz: 0, tx0: 0, tz0: 0, tk: { ban: 0, kt: 0, cuop: 0, cuu: 0 },
       ai: { t: Math.random() * 0.2, tx: 0, tz: 0, act: null }
     };
@@ -178,7 +179,7 @@ function taoTran() {
   diem[0] = diem[1] = 0; thoiGian = CH.gio; vang = false; REC.length = 0;
   datViTri(0); datBong();
 }
-function datBong() { B.x = B.z = 0; B.y = BONG_R; B.vx = B.vy = B.vz = 0; B.chu = null; B.cong = B.congT = 0; B.sieu = false; B.daThu = false; B.nhan = null; B.passer = null; B.cuoiCham = null; }
+function datBong() { B.x = B.z = 0; B.y = BONG_R; B.vx = B.vy = B.vz = 0; B.chu = null; B.cong = B.congT = 0; B.sieu = false; B.xuyen = false; B.daThu = false; B.nhan = null; B.passer = null; B.cuoiCham = null; }
 function datViTri(doiBD) {
   doiBatDau = doiBD;
   for (const p of CT) {
@@ -314,7 +315,7 @@ function nguoiBuoc(p, xung) {
 function manh(p) { return p.doi === 0 ? 1 : -1; }   // hướng tấn công: đội 0 đá sang +x
 function nhanBong(p) {
   if (B.chu && B.chu !== p && B.chu.vt === 'tm') B.chu.giuHold = 0;
-  B.chu = p; B.nhan = null; B.daThu = false; B.congT = 0; B.sieu = false; p.coBongT = 0; p.giuHold = 0;
+  B.chu = p; B.nhan = null; B.daThu = false; B.congT = 0; B.sieu = false; B.xuyen = false; p.coBongT = 0; p.giuHold = 0;
   if (B.cuoiCham && B.cuoiCham !== p && B.cuoiCham.doi !== p.doi) { /* cướp được bóng từ đối thủ */ }
   B.cuoiCham = p;
 }
@@ -322,6 +323,7 @@ function sut(p, dx, dz, luc, loai) {
   const m = Math.hypot(dx, dz) || 1; dx /= m; dz /= m;
   const dirG = manh(p); let sieu = false, cong = 0;
   if (p.buff.sam > 0) { sieu = true; p.buff.sam = 0; }
+  let xuyen = false; if (p.buff.xuyen > 0 && loai !== 'hat') { xuyen = true; p.buff.xuyen = 0; }
   if (p.tt > 0) sieu = true;
   if (p.buff.cong > 0) { p.buff.cong = 0; cong = 10 * (Math.abs(p.z) < 1.5 ? (Math.random() < .5 ? 1 : -1) : (-Math.sign(p.z * dx) || 1)); }
   let ax = dx, az = dz;
@@ -336,7 +338,8 @@ function sut(p, dx, dz, luc, loai) {
   let sp = noi(LUC_SUT_NHO, LUC_SUT_LON, luc) * (0.85 + p.nv.sut * 0.025); if (sieu) sp *= 1.3;
   let vy = loai === 'hat' ? 8.8 : 0.8 + luc * 4.2;
   if (loai === 'hat') sp = 12 + luc * 3;
-  B.chu = null; B.vx = ax * sp; B.vz = az * sp; B.vy = vy; B.cong = cong; B.congT = cong ? 1.25 : 0; B.sieu = sieu; B.daThu = false; B.nhan = null;
+  B.chu = null; B.vx = ax * sp; B.vz = az * sp; B.vy = vy; B.cong = cong; B.congT = cong ? 1.25 : 0; B.sieu = sieu; B.xuyen = xuyen; B.daThu = false; B.nhan = null;
+  if (xuyen) { songXungKich(B.x, 0.12, B.z, 0xc48fff, 3.5, 0.6); for (let i = 0; i < 16; i++) hat(B.x, 0.6, B.z, ngauNhien(-5, 5), ngauNhien(0, 4), ngauNhien(-5, 5), 0xd9a6ff, 0.5, 0.5, 0, 0); chopT = Math.max(chopT, 0.35); }
   B.cuoiCham = p; p.nhanCd = 0.4; p.kick = 0.3; p.ang = Math.atan2(ax, az); p.nang = Math.min(100, p.nang + 4);
   B.x = p.x + ax * 0.9; B.z = p.z + az * 0.9; if (B.y < 0.5) B.y = 0.5;
   // hiệu ứng sút
@@ -359,9 +362,9 @@ function chuyen(p, dx, dz) {
     if (c > 0.3 && s > bs) { bs = s; best = q; }
   }
   let tx, tz;
-  if (best) { const d = Math.hypot(best.x - p.x, best.z - p.z), tl = d / 16; tx = best.x + best.vx * tl * 0.7; tz = best.z + best.vz * tl * 0.7; }
+  if (best) { const d = Math.hypot(best.x - p.x, best.z - p.z), tl = d / 16, dc = 0.35 + p.nv.chuyen * 0.05; tx = best.x + best.vx * tl * dc; tz = best.z + best.vz * tl * dc; }
   else { tx = p.x + dx * 14; tz = p.z + dz * 14; }
-  const ex = tx - p.x, ez = tz - p.z, d = Math.hypot(ex, ez) || 1, sp = Math.min(26, 10 + d * 0.9);
+  const ex = tx - p.x, ez = tz - p.z, d = Math.hypot(ex, ez) || 1, sp = Math.min(28, 10 + d * 0.9) * (0.82 + p.nv.chuyen * 0.03);
   B.chu = null; B.vx = ex / d * sp; B.vz = ez / d * sp; B.vy = d > 16 ? 4 : 0.6; B.cong = B.congT = 0; B.sieu = false; B.daThu = false;
   B.nhan = best; B.cuoiCham = p; B.passer = p; B.passerT = 3.5;
   p.nhanCd = 0.35; p.kick = 0.3; p.ang = Math.atan2(ex, ez); p.nang = Math.min(100, p.nang + 8);
@@ -375,7 +378,7 @@ function hatBong(p, dx, dz) {
 function tac(p) {
   if (p.tacCd > 0 || p.stun > 0 || p.truot > 0 || p.dashT > 0) return;
   if (B.chu === p) return;
-  p.tacCd = p.nguoi ? 0.6 : 0.9; p.truot = 0.38; p.tacXong = false; p.dashX = Math.sin(p.ang); p.dashZ = Math.cos(p.ang); p.dashV = 13;
+  p.tacCd = (p.nguoi ? 0.7 : 1.0) - p.nv.the * 0.02; p.truot = 0.38; p.tacXong = false; p.dashX = Math.sin(p.ang); p.dashZ = Math.cos(p.ang); p.dashV = 13;
   tieng('tac'); toaHat(p.x, 0.2, p.z, 6, 0xb8e0a0, 2.4, 0.5, 0.8, 0, 0);
 }
 function xetTac(p) {          // kiểm tra tắc bóng khi đang trượt
@@ -387,7 +390,7 @@ function xetTac(p) {          // kiểm tra tắc bóng khi đang trượt
     if (d < (p.nguoi ? 2.3 : 1.7) && (dx * fx + dz * fz) / (d || 1) > (p.nguoi ? -0.2 : 0.1)) {
       p.tacXong = true;
       const khoeA = p.nguoi ? 0.95 : MUC_KHO[CH.kho].cuopBong * (0.45 + p.nv.pn * 0.05) + 0.25;
-      if (o.buff.khien > 0 || o.dashT > 0 || Math.random() > khoeA - o.nv.pn * 0.012) { p.stun = p.nguoi ? 0.3 : 0.6; tieng('nay'); return; }
+      if (o.buff.khien > 0 || o.dashT > 0 || Math.random() > khoeA - o.nv.pn * 0.006 - o.nv.re * 0.016) { p.stun = p.nguoi ? 0.3 : 0.6; tieng('nay'); return; }
       B.chu = null; B.vx = fx * 7 + o.vx * 0.3; B.vz = fz * 7 + o.vz * 0.3; B.vy = 2.2; B.daThu = false; B.cuoiCham = p; B.passer = null;
       o.stun = 0.55; o.nhanCd = 0.5; o.coBongT = 0; p.nhanCd = 0.15; p.tk.cuop++; p.nang = Math.min(100, p.nang + 15);
       toaHat(o.x, 0.9, o.z, 14, 0xffffff, 5, 0.45, 0.6, 0, 0); songXungKich(o.x, 0.1, o.z, 0xaaffcc, 1.8, 0.4); tieng('tac');
@@ -402,7 +405,7 @@ function xetTac(p) {          // kiểm tra tắc bóng khi đang trượt
 }
 function lach(p, ix, iz) {
   if (p.lachCd > 0 || p.stun > 0 || p.truot > 0 || p.dashT > 0) return;
-  p.lachCd = 2.5; let m = Math.hypot(ix, iz);
+  p.lachCd = 3.3 - p.nv.re * 0.12; let m = Math.hypot(ix, iz);
   if (m < 0.2) { ix = Math.sin(p.ang); iz = Math.cos(p.ang); m = 1; }
   p.dashX = ix / m; p.dashZ = iz / m; p.dashV = 22; p.dashT = 0.2; tieng('chuyen');
   toaHat(p.x, 0.3, p.z, 8, 0xffffff, 3, 0.4, 0.6, 0, 0);
@@ -428,6 +431,7 @@ function dungChieu(p) {
   songXungKich(p.x, 0.1, p.z, 0xcf9bff, 2.4, 0.5);
   if (ma === 'sam') p.buff.sam = 10;
   else if (ma === 'tay') p.buff.tay = 4;
+  else if (ma === 'xuyen') p.buff.xuyen = 10;
   else if (ma === 'toc') p.buff.toc = 4;
   else if (ma === 'cong') p.buff.cong = 10;
   else if (ma === 'khien') {
@@ -472,7 +476,7 @@ function apDung(p, inp, h) {
   if (!p.nguoi && p.doi === 1) vmax *= MUC_KHO[CH.kho].toc;   // chỉ đội đối thủ bị chậm đi ở mức dễ
   if (p.nguoi) vmax *= 1.06;
   if (p.tt > 0) vmax *= 1.22; if (p.buff.toc > 0) vmax *= 1.55; if (p.buff.tay > 0) vmax *= 1.2;
-  if (B.chu === p) vmax *= 0.93; if (p.gong > 0.05) vmax *= 0.8; if (p.giu > 0) vmax *= 0.5;
+  if (B.chu === p) vmax *= 0.86 + p.nv.re * 0.012; if (p.gong > 0.05) vmax *= 0.8; if (p.giu > 0) vmax *= 0.5;
   let ix = inp.ix, iz = inp.iz; const mm = Math.hypot(ix, iz); if (mm > 1) { ix /= mm; iz /= mm; }
   let tx = ix * vmax, tz = iz * vmax, kk = 11;
   if (p.dashT > 0) { tx = p.dashX * p.dashV; tz = p.dashZ * p.dashV; kk = 40; }
@@ -486,15 +490,15 @@ function apDung(p, inp, h) {
     if (muc !== null) p.ang -= gocChenh(p.ang, muc) * Math.min(1, h * 14);
   }
   // hào quang
-  if (p.tt > 0 || p.buff.toc > 0 || p.buff.khien > 0 || p.buff.sam > 0 || p.buff.cong > 0 || p.buff.tay > 0) {
+  if (p.tt > 0 || p.buff.toc > 0 || p.buff.khien > 0 || p.buff.sam > 0 || p.buff.cong > 0 || p.buff.tay > 0 || p.buff.xuyen > 0) {
     if (Math.random() < h * 40) {
-      const mau = p.tt > 0 ? (Math.random() < .5 ? 0xffc84a : 0x6ab8ff) : p.buff.khien > 0 ? 0x7ac8ff : p.buff.toc > 0 ? 0x7dffa0 : p.buff.tay > 0 ? 0xff9a3a : 0xffee70;
+      const mau = p.tt > 0 ? (Math.random() < .5 ? 0xffc84a : 0x6ab8ff) : p.buff.khien > 0 ? 0x7ac8ff : p.buff.toc > 0 ? 0x7dffa0 : p.buff.tay > 0 ? 0xff9a3a : p.buff.xuyen > 0 ? 0xc48fff : 0xffee70;
       hat(p.x + ngauNhien(-.4, .4), ngauNhien(0.1, 1.8), p.z + ngauNhien(-.4, .4), ngauNhien(-.5, .5), ngauNhien(1.5, 3.5), ngauNhien(-.5, .5), mau, 0.5, 0.7, 0.1, 0);
     }
   }
   if (p.mung) { p.mungT += h; if (p.mung === 'nhay') p.ny = Math.abs(Math.sin(p.mungT * 8)) * 0.9; else if (p.mung === 'xoay') { p.xoayNguoi = p.mungT * 12; p.ny = Math.abs(Math.sin(p.mungT * 5)) * 0.4; } else if (p.mung === 'truot') { p.ny = 0; } } else p.ny = 0;
   // năng lượng
-  if (diChoi && B.chu === p && p.spd > 3) p.nang = Math.min(100, p.nang + h * (p.nguoi ? 9 : 5));
+  if (diChoi && B.chu === p && p.spd > 3) p.nang = Math.min(100, p.nang + h * (p.nguoi ? 9 : 5) * (0.6 + p.nv.the * 0.06));
   if (p.dive > 0) p.vx *= 0.98;
 }
 function thaSut(p, inp, l) {
@@ -526,7 +530,7 @@ function buocBong(h) {
   if (B.y < BONG_R) {
     B.y = BONG_R;
     if (B.vy < -2.5) { B.vy = -B.vy * 0.6; if (B.vy > 3) tieng('nay'); } else B.vy = 0;
-    const ms = Math.exp(-0.9 * h); B.vx *= ms; B.vz *= ms; if (Math.hypot(B.vx, B.vz) < 0.15) { B.vx = B.vz = 0; }
+    const ms = Math.exp(-0.9 * h); B.vx *= ms; B.vz *= ms; if (Math.hypot(B.vx, B.vz) < 0.15) { B.vx = B.vz = 0; B.xuyen = false; }
   } else { const kh = Math.exp(-0.06 * h); B.vx *= kh; B.vz *= kh; }
   B.quayX += B.vz * h * 2.6; B.quayZ -= B.vx * h * 2.6;
   if (B.passerT > 0) B.passerT -= h;
@@ -584,6 +588,7 @@ function xuLyBong(h) {
     const d = Math.hypot(B.x - p.x, B.z - p.z), reach = p.vt === 'tm' ? 1.35 : (p.nguoi ? 1.35 : 0.95);
     if (d < reach && B.y < 1.35 && d < td) {
       if (Math.hypot(B.vx, B.vz) > 22 && p.vt !== 'tm') continue;
+      if (B.xuyen && p.vt !== 'tm' && Math.hypot(B.vx, B.vz) > 6) continue;   // bóng xuyên phá: chỉ thủ môn chạm được
       td = d; tot = p;
     }
   }
@@ -617,7 +622,7 @@ function aiQuyet(p, kho) {
     if (p.tt <= 0 && p.nang >= 100 && dg < 30 * K) A.act = { k: 'tt' };
     else if (p.chieuCd <= 0) {
       const ma = p.nv.chieu.ma;
-      if ((ma === 'sam' || ma === 'cong') && dg < 24 * K) A.act = { k: 'chieu' };
+      if ((ma === 'sam' || ma === 'cong' || ma === 'xuyen') && dg < 24 * K) A.act = { k: 'chieu' };
       else if ((ma === 'toc' || ma === 'luot') && dg > 14 * K && od > 3) A.act = { k: 'chieu' };
       else if (ma === 'khien' && od < 3.5) A.act = { k: 'chieu' };
     }
@@ -947,6 +952,7 @@ function vong(now) {
     bongMesh.position.set(B.x, B.y, B.z); bongMesh.rotation.set(B.quayX, 0, B.quayZ);
     const sp = Math.hypot(B.vx, B.vz) + Math.abs(B.vy);
     if (!B.chu && (tt === 'choi' || tt === 'ghiban') && sp > 12) {
+      if (B.xuyen) { toaHat(B.x, B.y, B.z, 2, 0xc48fff, 2.2, 0.35, 0.6, 0, 0); }
       if (B.sieu) { toaHat(B.x, B.y, B.z, 2, 0x80d0ff, 2.2, 0.35, 0.6, 0, 0); if (Math.random() < 0.5) hat(B.x + ngauNhien(-.5, .5), B.y + ngauNhien(-.5, .5), B.z + ngauNhien(-.5, .5), 0, 0, 0, 0xffffff, 0.12, 0.9, 0.2, 0); }
       else if (sp > 22) hat(B.x, B.y, B.z, 0, 0.5, 0, 0xffe0a0, 0.28, 0.7, 0.1, 0);
     }
