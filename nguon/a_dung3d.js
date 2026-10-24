@@ -33,6 +33,31 @@ const MUC_KHO = {            // máy chơi giỏi hay dở (Dễ là mức mặc
 };
 const MAU_GIAY = ['#ffffff', '#ffd23a', '#2de08a', '#ff5ac8'];
 
+// ===================== CỬA HÀNG (xu kiếm được khi chơi, không dùng tiền thật) =====================
+const XU_BAN_DAU = 60;                                             // xu có sẵn khi chơi lần đầu
+const XU_THUONG = { ban: 10, kienTao: 5, thang: 40, hoa: 15, thua: 5, mvp: 20 };   // thưởng sau mỗi trận
+const GIA_NGAU_NHIEN = 30;                                         // giá "Thử vận may": luôn nhận một chiêu mới chưa có
+// 10 chiêu bấm Q. Mỗi bạn có sẵn chiêu riêng của mình (không mất xu), muốn chiêu khác thì mua ở cửa hàng.
+const CHIEU_KHO = [
+  { ma: 'sam', icon: '⚡', ten: 'Sút Sấm Sét', mt: 'Cú sút kế tiếp cực mạnh, có tia chớp xanh.', gia: 60 },
+  { ma: 'cong', icon: '🌈', ten: 'Xoáy Cong', mt: 'Cú sút kế tiếp bay cong như cầu vồng.', gia: 50 },
+  { ma: 'xuyen', icon: '🎯', ten: 'Sút Xuyên Phá', mt: 'Cú sút kế tiếp xuyên qua mọi hậu vệ, chỉ thủ môn chạm được.', gia: 90 },
+  { ma: 'toc', icon: '👟', ten: 'Tăng Tốc', mt: 'Chạy nhanh hơn rất nhiều trong 4 giây.', gia: 50 },
+  { ma: 'luot', icon: '💨', ten: 'Lướt Gió', mt: 'Lao vọt về phía trước, xuyên qua mọi người.', gia: 60 },
+  { ma: 'khien', icon: '🛡', ten: 'Khiên Sắt', mt: 'Không bị tắc bóng và đẩy lùi đối thủ xung quanh.', gia: 70 },
+  { ma: 'tay', icon: '🧤', ten: 'Bàn Tay Thép', mt: 'Tay dài gấp đôi và chạy nhanh hơn trong 4 giây (hợp với thủ môn).', gia: 40 },
+  { ma: 'nam', icon: '🧲', ten: 'Nam Châm', mt: 'Trong 4 giây, bóng ở gần tự lăn về chân bạn.', gia: 80 },
+  { ma: 'dongbang', icon: '❄', ten: 'Đóng Băng', mt: 'Mọi đối thủ quanh bạn đứng im 2 giây.', gia: 100 },
+  { ma: 'ma', icon: '👻', ten: 'Bóng Ma', mt: 'Trong 3 giây đối thủ không tắc được bạn và không đuổi theo bạn.', gia: 110 }
+];
+// 4 kiểu Thức tỉnh (bấm F khi thanh năng lượng đầy). "lua" có sẵn.
+const THUC_TINH_KHO = [
+  { ma: 'lua', icon: '🔥', ten: 'Bão Lửa', mt: 'Chạy nhanh hơn, mọi cú sút đều là Siêu sút bốc lửa.', gia: 0 },
+  { ma: 'bang', icon: '🧊', ten: 'Băng Giá', mt: 'Đối thủ đến gần bị chậm đi một nửa, không ai tắc được bạn, sút vẫn là Siêu sút.', gia: 160 },
+  { ma: 'loc', icon: '🌪', ten: 'Lốc Xoáy', mt: 'Siêu sút bay cong dữ dội, rất khó bắt.', gia: 150 },
+  { ma: 'chop', icon: '💫', ten: 'Tia Chớp', mt: 'Chạy nhanh gấp rưỡi và lách liên tục không cần chờ hồi.', gia: 200 }
+];
+
 // 10 cầu thủ của hai lớp. 6 bạn đầu chọn được ở sảnh chờ, 4 bạn còn lại do máy điều khiển.
 // vt: tm = thủ môn, hv = hậu vệ, tdao = tiền đạo. Muốn sửa chỉ số, tên, màu tóc... cứ sửa ở đây.
 // 6 chỉ số (1-10): toc = Tốc độ, sut = Sút, pn = Phòng thủ, chuyen = Chuyền, re = Rê bóng, the = Thể lực

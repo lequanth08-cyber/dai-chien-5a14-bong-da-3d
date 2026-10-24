@@ -55,7 +55,34 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-actio
 .hang.tl .thanh i{background:linear-gradient(90deg,#ff5a5a,#ffc27a)}
 #nvMoTa{font-size:calc(var(--u)*1.4);line-height:1.35;color:#cfe0ff;margin:calc(var(--u)*.7) 0}
 #nvChieu{border-top:1px dashed rgba(140,180,255,.4);padding-top:calc(var(--u)*.7);font-size:calc(var(--u)*1.35);line-height:1.3;color:#cfe0ff}
-#nvChieu b{display:block;color:var(--vang);font-size:calc(var(--u)*1.7);text-transform:uppercase;font-style:italic}
+#nvChieu b{display:block;color:var(--vang);font-size:calc(var(--u)*1.6);text-transform:uppercase;font-style:italic}
+#nvChieu b.tt{color:#ff9a3a;margin-top:calc(var(--u)*.5);font-size:calc(var(--u)*1.35)}
+#nvChieu span{display:block;font-size:calc(var(--u)*1.2)}
+#nutCuaHang{display:flex;justify-content:center;align-items:center;gap:calc(var(--u)*1);width:100%;margin:calc(var(--u)*.2) 0 calc(var(--u)*.5);padding:calc(var(--u)*.7) 0;font:inherit;font-size:calc(var(--u)*1.6);font-weight:900;color:#fff;
+  background:linear-gradient(180deg,#5a3cff,#2d1a9e);border:1px solid #a68bff;border-radius:calc(var(--u)*1);cursor:pointer;box-shadow:0 calc(var(--u)*.3) 0 #1a0d66}
+.xu{background:rgba(0,0,0,.35);border-radius:99px;padding:calc(var(--u)*.15) calc(var(--u)*.8);font-size:calc(var(--u)*1.3);color:#ffe36a}
+.xu.lon{font-size:calc(var(--u)*1.9);padding:calc(var(--u)*.3) calc(var(--u)*1.2)}
+#cuaHangLop{background:rgba(2,6,22,.8);z-index:30}
+#cuaHangLop.hien{display:block}
+#cuaHangHop{width:calc(var(--u)*86);max-width:96%}
+.chDau{display:flex;justify-content:space-between;align-items:center;margin-bottom:calc(var(--u)*.5)}
+.chDau h2{margin:0;font-size:calc(var(--u)*3)}
+.chTabs{width:calc(var(--u)*34);margin:0 auto calc(var(--u)*.4)}
+#chGoi{font-size:calc(var(--u)*1.3);color:#cfe0ff;margin:0 0 calc(var(--u)*.6)}
+#chLuoi{display:grid;grid-template-columns:repeat(5,1fr);gap:calc(var(--u)*.7);margin-bottom:calc(var(--u)*.8)}
+.chThe{position:relative;background:rgba(255,255,255,.06);border:2px solid rgba(150,190,255,.3);border-radius:calc(var(--u)*1);padding:calc(var(--u)*.7) calc(var(--u)*.5) calc(var(--u)*.6);cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*.3);min-height:calc(var(--u)*15)}
+.chThe:hover{background:rgba(255,255,255,.12)}
+.chThe.co{border-color:#59d0ff}
+.chThe.dang{border-color:var(--vang);background:rgba(60,48,0,.5);box-shadow:0 0 calc(var(--u)*1.2) rgba(255,210,60,.6)}
+.chThe.thieu{opacity:.55}
+.chIcon{font-size:calc(var(--u)*3.4);line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.chThe b{font-size:calc(var(--u)*1.35);color:#fff;line-height:1.1}
+.chThe small{font-size:calc(var(--u)*1.05);color:#cfe0ff;line-height:1.25;flex:1}
+.chNhan{font-size:calc(var(--u)*1.15);font-weight:900;padding:calc(var(--u)*.2) calc(var(--u)*.8);border-radius:99px;background:#1d3d9a;border:1px solid #6aa0ff}
+.chNhan.gia{background:#5a3a00;border-color:#ffd23a;color:#ffe36a}
+.chNhan.dang{background:#ffd23a;color:#241a00;border-color:#fff3b0}
+.chNhan.co{background:#0d6b45;border-color:#59e0a0}
+@media (max-height:420px){#chLuoi{gap:calc(var(--u)*.4)}.chThe{min-height:0;padding:calc(var(--u)*.4)}.chThe small{display:none}.chIcon{font-size:calc(var(--u)*2.6)}#chGoi{display:none}.hop.bang#cuaHangHop{padding:calc(var(--u)*.7)}}
 #sanhPhai{position:absolute;right:var(--ph);top:calc(var(--tn) + var(--u)*1);width:calc(var(--u)*25)}
 .nhomChon{margin-bottom:calc(var(--u)*.9)}
 .nhomChon label{display:block;font-size:calc(var(--u)*1.2);color:#9fc2ff;letter-spacing:.12em;text-transform:uppercase;margin-bottom:calc(var(--u)*.35)}
@@ -217,7 +244,7 @@ body.cam #cam.hien{display:block}
     <div class="hang re"><span>Rê bóng</span><div class="thanh"><i id="bRe"></i></div><b id="vRe">7</b></div>
     <div class="hang tl"><span>Thể lực</span><div class="thanh"><i id="bThe"></i></div><b id="vThe">8</b></div>
     <div id="nvMoTa"></div>
-    <div id="nvChieu"><b id="chieuTen"></b><span id="chieuMt"></span></div>
+    <div id="nvChieu"><b id="chieuTen"></b><span id="chieuMt"></span><b id="ttTen" class="tt"></b><span id="ttMt"></span></div>
   </div>
   <button class="mui" id="muiTrai">◀</button>
   <button class="mui" id="muiPhai">▶</button>
@@ -229,6 +256,7 @@ body.cam #cam.hien{display:block}
     <div class="nhomChon"><label>Ăn mừng</label><div class="hangNut" id="chonMung">
       <button class="chon dang" data-v="nhay">Nhảy</button><button class="chon" data-v="xoay">Xoay</button><button class="chon" data-v="truot">Trượt</button></div></div>
     <div class="nhomChon"><label>Màu giày</label><div class="hangNut" id="chonGiay"></div></div>
+    <button id="nutCuaHang">🛒 CỬA HÀNG <span class="xu">🪙 <b id="xuSo">0</b></span></button>
     <button id="nutTim">TÌM TRẬN</button>
   </div>
   <div id="theNV"></div>
@@ -291,6 +319,13 @@ body.cam #cam.hien{display:block}
   <button class="nutLon" id="dungVe">Về sảnh</button>
 </div></div>
 <div id="toast"></div>
+<div id="cuaHangLop" class="lop"><div class="hop bang" id="cuaHangHop">
+  <div class="chDau"><h2 class="chu3d">Cửa hàng</h2><span class="xu lon">🪙 <b id="chXu">0</b> xu</span></div>
+  <div class="hangNut chTabs"><button class="chon dang" id="chTabChieu">Chiêu (Q)</button><button class="chon" id="chTabTT">Thức tỉnh (F)</button></div>
+  <p id="chGoi"></p>
+  <div id="chLuoi"></div>
+  <div><button class="nutLon vang" id="chNgauNhien">🎲 Thử vận may</button><button class="nutLon" id="chDong">Đóng</button></div>
+</div></div>
 <div id="iosTip"><div>Để chơi <b>toàn màn hình</b> trên iPhone: bấm nút <b>Chia sẻ</b> (ô vuông có mũi tên) rồi chọn <b>"Thêm vào Màn hình chính"</b>, sau đó mở game từ màn hình chính.</div><button id="iosTipDong">Đã hiểu</button></div>
 <div id="huongDanLop" class="lop"><div class="hop bang">
   <h2 class="chu3d">Cách chơi</h2>

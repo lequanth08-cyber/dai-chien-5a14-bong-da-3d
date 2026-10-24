@@ -14,6 +14,16 @@ Game bóng đá 5 đấu 5 chạy trên trình duyệt, đồ họa 3D, làm cho
 
 Mỗi cầu thủ có 6 chỉ số: Tốc độ, Sút, Phòng thủ, Chuyền, Rê bóng, Thể lực. Chuyền làm bóng đi nhanh và đón đúng hướng chạy; Rê bóng giúp giữ bóng chạy nhanh hơn, khó bị tắc hơn và lách hồi nhanh hơn; Thể lực làm thanh Thức tỉnh đầy nhanh hơn và tắc bóng hồi nhanh hơn.
 
+## Cửa hàng
+
+Sau mỗi trận bạn nhận xu (thắng 40, hòa 15, thi đấu 5, mỗi bàn 10, mỗi kiến tạo 5, MVP 20). Xu chỉ kiếm được bằng cách chơi, không mua bằng tiền thật. Ở sảnh chờ bấm **Cửa hàng** để:
+
+- Mua chiêu (phím Q, nút CHIÊU): 10 chiêu như Sút Sấm Sét, Xoáy Cong, Sút Xuyên Phá, Tăng Tốc, Lướt Gió, Khiên Sắt, Bàn Tay Thép, Nam Châm, Đóng Băng, Bóng Ma. Mỗi bạn luôn có sẵn chiêu riêng của mình.
+- Mua kiểu Thức tỉnh (phím F, nút THỨC TỈNH): Bão Lửa (có sẵn), Băng Giá, Lốc Xoáy, Tia Chớp.
+- **Thử vận may** (30 xu): luôn nhận một chiêu mới chưa có, không bao giờ trượt. Khi đã có đủ chiêu, nút này chọn ngẫu nhiên một chiêu để dùng, miễn phí.
+
+Giá và phần thưởng chỉnh ở `CHIEU_KHO`, `THUC_TINH_KHO`, `XU_THUONG` trong `nguon/a_dung3d.js`.
+
 **Chơi ngay:** mở file `ego3d.html` bằng trình duyệt. Không cần cài đặt, không cần mạng, vì thư viện three.js đã nhúng sẵn trong file.
 
 ## Cách chơi

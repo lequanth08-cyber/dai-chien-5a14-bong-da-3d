@@ -8,6 +8,20 @@ try { const l = JSON.parse(localStorage.getItem('ego3d_cfg2') || 'null'); if (l 
 if (!(CH.nv >= 0 && CH.nv < SO_CHON)) CH.nv = 0;
 if (!MUC_KHO[CH.kho]) CH.kho = 'de';
 function luuCH() { try { localStorage.setItem('ego3d_cfg2', JSON.stringify(CH)); } catch (e) { } }
+// Kho: xu đang có, chiêu đã mua, kiểu Thức tỉnh đã mua
+const KHO = { xu: XU_BAN_DAU, chieu: [], tt: ['lua'] };
+try { const l = JSON.parse(localStorage.getItem('ego3d_kho') || 'null'); if (l && typeof l === 'object') { if (typeof l.xu === 'number') KHO.xu = l.xu; if (Array.isArray(l.chieu)) KHO.chieu = l.chieu; if (Array.isArray(l.tt)) KHO.tt = l.tt; } } catch (e) { }
+if (!KHO.tt.includes('lua')) KHO.tt.push('lua');
+if (!CH.chieu) CH.chieu = 'rieng';          // 'rieng' = chiêu riêng của nhân vật đang chọn
+if (!CH.tt || !KHO.tt.includes(CH.tt)) CH.tt = 'lua';
+function luuKHO() { try { localStorage.setItem('ego3d_kho', JSON.stringify(KHO)); } catch (e) { } }
+function timChieu(ma) { return CHIEU_KHO.find(x => x.ma === ma); }
+function timTT(ma) { return THUC_TINH_KHO.find(x => x.ma === ma) || THUC_TINH_KHO[0]; }
+// Chiêu mà nhân vật nv sẽ dùng trong trận theo lựa chọn ở cửa hàng
+function layChieuChon(nv) {
+  if (CH.chieu !== 'rieng' && CH.chieu !== nv.chieu.ma && KHO.chieu.includes(CH.chieu)) { const x = timChieu(CH.chieu); if (x) return x; }
+  return nv.chieu;
+}
 let tongGiayChoi = 0, daNhacMat = false, gioThuc = 0;
 
 const B = { x: 0, y: BONG_R, z: 0, vx: 0, vy: 0, vz: 0, chu: null, cong: 0, congT: 0, sieu: false, daThu: false, cuoiCham: null, passer: null, passerT: 0, nhan: null, quayX: 0, quayZ: 0, xuyen: false };
@@ -45,7 +59,7 @@ function chonNV(i, khongAm) {
   sanhMH.forEach((m, k) => { m.goc.visible = (k === i); });
   $('nvTen').textContent = nv.ten; $('nvVaiTro').textContent = nv.vai; $('nvSo').textContent = '#' + nv.so; $('nvLop').textContent = 'Lớp ' + nv.lop;
   for (const [id, v] of [['Toc', nv.toc], ['Sut', nv.sut], ['Pn', nv.pn], ['Ch', nv.chuyen], ['Re', nv.re], ['The', nv.the]]) { $('b' + id).style.width = (v * 10) + '%'; $('v' + id).textContent = v; }
-  $('nvMoTa').textContent = nv.mota; $('chieuTen').textContent = nv.chieu.ten; $('chieuMt').textContent = nv.chieu.mt;
+  $('nvMoTa').textContent = nv.mota; capNhatChieuSanh();
   document.querySelectorAll('.the').forEach((e, k) => e.classList.toggle('dang', k === i));
   sanhPop = 0.5; chopT = 0.35; sanhMungT = 0;
   if (!khongAm) { moAmThanh(); tieng('chon'); }
@@ -71,11 +85,72 @@ function dungSanh() {
   $('nutTim').onclick = () => { tuBatToanManHinh(); moAmThanh(); tieng('coi'); $('iosTip').classList.remove('hien'); batDauGhep(); };
   $('nutAm').onclick = () => { tatAm = !tatAm; try { localStorage.setItem('ego3d_tat', tatAm ? '1' : '0'); } catch (e) { } $('nutAm').textContent = tatAm ? '🔇' : '🔊'; moAmThanh(); };
   $('nutAm').textContent = tatAm ? '🔇' : '🔊';
+  $('nutCuaHang').onclick = () => { moAmThanh(); tieng('ting'); moCuaHang(true); };
+  $('chDong').onclick = () => { moCuaHang(false); tieng('ting'); };
+  $('chTabChieu').onclick = () => { tabCH = 'chieu'; veCuaHang(); }; $('chTabTT').onclick = () => { tabCH = 'tt'; veCuaHang(); };
+  $('chNgauNhien').onclick = thuVanMay;
   $('nutToan').onclick = toanManHinh; $('nutHD').onclick = () => hienHuongDan(true);
   $('hdDong').onclick = () => hienHuongDan(false);
   $('dungToan').onclick = toanManHinh; $('dungHD').onclick = () => hienHuongDan(true);
   if (window.matchMedia && (matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches || navigator.standalone)) { $('nutToan').style.display = 'none'; $('dungToan').style.display = 'none'; }
   chonNV(CH.nv, true); goiYiOS();
+}
+function capNhatChieuSanh() {
+  const nv = NHAN_VAT[CH.nv], ch = layChieuChon(nv), t = timTT(CH.tt);
+  $('chieuTen').textContent = ch.icon ? ch.icon + ' ' + ch.ten : ch.ten; $('chieuMt').textContent = ch.mt + (ch === nv.chieu ? ' (chiêu riêng)' : '');
+  $('ttTen').textContent = t.icon + ' Thức tỉnh: ' + t.ten; $('ttMt').textContent = t.mt;
+  $('xuSo').textContent = KHO.xu;
+}
+// ---------- CỬA HÀNG ----------
+let tabCH = 'chieu';
+function moCuaHang(bat) { $('cuaHangLop').classList.toggle('hien', bat); if (bat) veCuaHang(); }
+function veCuaHang() {
+  const nv = NHAN_VAT[CH.nv], laChieu = tabCH === 'chieu';
+  $('chTabChieu').classList.toggle('dang', laChieu); $('chTabTT').classList.toggle('dang', !laChieu);
+  $('chXu').textContent = KHO.xu;
+  const ds = laChieu ? CHIEU_KHO : THUC_TINH_KHO;
+  $('chLuoi').innerHTML = ds.map(x => {
+    const rieng = laChieu && x.ma === nv.chieu.ma;
+    const co = rieng || (laChieu ? KHO.chieu.includes(x.ma) : KHO.tt.includes(x.ma));
+    const dang = laChieu ? (layChieuChon(nv).ma === x.ma) : CH.tt === x.ma;
+    const nut = dang ? '<span class="chNhan dang">ĐANG DÙNG</span>' : co ? '<span class="chNhan co">CHỌN</span>' : '<span class="chNhan gia">🪙 ' + x.gia + '</span>';
+    return '<div class="chThe' + (dang ? ' dang' : co ? ' co' : '') + (!co && KHO.xu < x.gia ? ' thieu' : '') + '" data-ma="' + x.ma + '"><div class="chIcon">' + x.icon + '</div><b>' + x.ten + '</b><small>' + x.mt + (rieng ? ' Chiêu riêng của ' + nv.ten + '.' : '') + '</small>' + nut + '</div>';
+  }).join('');
+  $('chLuoi').querySelectorAll('.chThe').forEach(e => e.onclick = () => chonHang(e.dataset.ma));
+  const conLai = CHIEU_KHO.filter(x => x.ma !== nv.chieu.ma && !KHO.chieu.includes(x.ma));
+  $('chNgauNhien').style.display = laChieu ? 'inline-block' : 'none';
+  $('chNgauNhien').textContent = conLai.length ? '🎲 Thử vận may: nhận 1 chiêu mới (' + GIA_NGAU_NHIEN + ' xu)' : '🎲 Chọn ngẫu nhiên một chiêu đã có';
+  $('chGoi').textContent = laChieu ? 'Mỗi bạn có sẵn chiêu riêng. Mua thêm chiêu bằng xu kiếm được sau mỗi trận.' : 'Chọn kiểu Thức tỉnh (bấm F khi thanh năng lượng đầy).';
+}
+function chonHang(ma) {
+  const nv = NHAN_VAT[CH.nv]; moAmThanh();
+  if (tabCH === 'chieu') {
+    const x = timChieu(ma); if (!x) return;
+    const co = x.ma === nv.chieu.ma || KHO.chieu.includes(x.ma);
+    if (!co) { if (KHO.xu < x.gia) { tieng('nay'); toast('Chưa đủ xu. Chơi thêm vài trận để kiếm xu nhé!'); return; } KHO.xu -= x.gia; KHO.chieu.push(x.ma); luuKHO(); tieng('ban'); toast('Đã mua ' + x.ten + '!'); }
+    else tieng('ting');
+    CH.chieu = x.ma === nv.chieu.ma ? 'rieng' : x.ma; luuCH();
+  } else {
+    const x = timTT(ma); const co = KHO.tt.includes(x.ma);
+    if (!co) { if (KHO.xu < x.gia) { tieng('nay'); toast('Chưa đủ xu. Chơi thêm vài trận để kiếm xu nhé!'); return; } KHO.xu -= x.gia; KHO.tt.push(x.ma); luuKHO(); tieng('ban'); toast('Đã mua Thức tỉnh ' + x.ten + '!'); }
+    else tieng('ting');
+    CH.tt = x.ma; luuCH();
+  }
+  veCuaHang(); capNhatChieuSanh(); sanhMungT = 0; chopT = 0.3;
+}
+function thuVanMay() {
+  const nv = NHAN_VAT[CH.nv]; moAmThanh();
+  const conLai = CHIEU_KHO.filter(x => x.ma !== nv.chieu.ma && !KHO.chieu.includes(x.ma));
+  let x;
+  if (conLai.length) {
+    if (KHO.xu < GIA_NGAU_NHIEN) { tieng('nay'); toast('Cần ' + GIA_NGAU_NHIEN + ' xu để thử vận may. Chơi thêm vài trận nhé!'); return; }
+    KHO.xu -= GIA_NGAU_NHIEN; x = conLai[(Math.random() * conLai.length) | 0]; KHO.chieu.push(x.ma); luuKHO(); tieng('ban');
+    toast('🎉 Bạn nhận được chiêu ' + x.icon + ' ' + x.ten + '!', 4000);
+  } else {
+    const tatCa = CHIEU_KHO.filter(x => x.ma === nv.chieu.ma || KHO.chieu.includes(x.ma));
+    x = tatCa[(Math.random() * tatCa.length) | 0]; tieng('chon'); toast('Chọn ngẫu nhiên: ' + x.icon + ' ' + x.ten);
+  }
+  CH.chieu = x.ma === nv.chieu.ma ? 'rieng' : x.ma; luuCH(); veCuaHang(); capNhatChieuSanh(); chopT = 0.4;
 }
 function capMauGiay() {
   document.querySelectorAll('.mauGiay').forEach((b, i) => b.classList.toggle('dang', i === CH.giay));
@@ -167,9 +242,10 @@ function taoTran() {
     const p = {
       doi, nv, idx: v.idx, vt: v.vt, lane: v.lane, nguoi: minh, mh, x: 0, z: 0, vx: 0, vz: 0, ang: 0, phase: Math.random() * 6, spd: 0,
       kick: 0, truot: 0, dive: 0, diveDir: 1, stun: 0, gong: 0, nhanCd: 0, tacCd: 0, chieuCd: 0, tt: 0, nang: 0, lachCd: 0, xoayCd: 0, xoayAnim: 0,
-      buff: { sam: 0, tay: 0, khien: 0, toc: 0, cong: 0, xuyen: 0 }, giu: 0, giuHold: 0, coBongT: 0, mung: null, mungT: 0, ny: 0, xoayNguoi: 0,
+      buff: { sam: 0, tay: 0, khien: 0, toc: 0, cong: 0, xuyen: 0, nam: 0, ma: 0 }, giu: 0, giuHold: 0, coBongT: 0, mung: null, mungT: 0, ny: 0, xoayNguoi: 0,
       dashT: 0, dashX: 0, dashZ: 0, dashV: 0, tacXong: false, auraT: 0, sx: 0, sz: 0, tx0: 0, tz0: 0, tk: { ban: 0, kt: 0, cuop: 0, cuu: 0 },
-      ai: { t: Math.random() * 0.2, tx: 0, tz: 0, act: null }
+      ai: { t: Math.random() * 0.2, tx: 0, tz: 0, act: null },
+      chieu: minh ? layChieuChon(nv) : nv.chieu, ttKieu: minh ? CH.tt : 'lua'
     };
     CT.push(p); return p;
   };
@@ -223,6 +299,7 @@ window.addEventListener('keydown', (e) => {
   if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(c)) e.preventDefault();
   if (e.repeat) { DV.phim[c] = true; return; }
   DV.phim[c] = true;
+  if (tt === 'sanh' && $('cuaHangLop').classList.contains('hien')) { if (c === 'Escape') moCuaHang(false); return; }
   if (tt === 'sanh') { if (c === 'ArrowLeft') chonNV(CH.nv - 1); else if (c === 'ArrowRight') chonNV(CH.nv + 1); else if (c === 'Enter' || c === 'Space') $('nutTim').click(); return; }
   if (c === 'Space') DV.xung.hat = true;
   if (c === 'ShiftLeft' || c === 'ShiftRight') DV.xung.tac = true;
@@ -324,7 +401,8 @@ function sut(p, dx, dz, luc, loai) {
   const dirG = manh(p); let sieu = false, cong = 0;
   if (p.buff.sam > 0) { sieu = true; p.buff.sam = 0; }
   let xuyen = false; if (p.buff.xuyen > 0 && loai !== 'hat') { xuyen = true; p.buff.xuyen = 0; }
-  if (p.tt > 0) sieu = true;
+  if (p.tt > 0 && p.ttKieu !== 'chop') sieu = true;
+  if (p.tt > 0 && p.ttKieu === 'loc' && loai !== 'hat') cong = 16 * (Math.random() < .5 ? 1 : -1);
   if (p.buff.cong > 0) { p.buff.cong = 0; cong = 10 * (Math.abs(p.z) < 1.5 ? (Math.random() < .5 ? 1 : -1) : (-Math.sign(p.z * dx) || 1)); }
   let ax = dx, az = dz;
   const gx = dirG * SAN_DAI, ex = gx - p.x, ez = -p.z, dg = Math.hypot(ex, ez) || 1;
@@ -390,7 +468,7 @@ function xetTac(p) {          // kiểm tra tắc bóng khi đang trượt
     if (d < (p.nguoi ? 2.3 : 1.7) && (dx * fx + dz * fz) / (d || 1) > (p.nguoi ? -0.2 : 0.1)) {
       p.tacXong = true;
       const khoeA = p.nguoi ? 0.95 : MUC_KHO[CH.kho].cuopBong * (0.45 + p.nv.pn * 0.05) + 0.25;
-      if (o.buff.khien > 0 || o.dashT > 0 || Math.random() > khoeA - o.nv.pn * 0.006 - o.nv.re * 0.016) { p.stun = p.nguoi ? 0.3 : 0.6; tieng('nay'); return; }
+      if (o.buff.khien > 0 || o.buff.ma > 0 || (o.tt > 0 && o.ttKieu === 'bang') || o.dashT > 0 || Math.random() > khoeA - o.nv.pn * 0.006 - o.nv.re * 0.016) { p.stun = p.nguoi ? 0.3 : 0.6; tieng('nay'); return; }
       B.chu = null; B.vx = fx * 7 + o.vx * 0.3; B.vz = fz * 7 + o.vz * 0.3; B.vy = 2.2; B.daThu = false; B.cuoiCham = p; B.passer = null;
       o.stun = 0.55; o.nhanCd = 0.5; o.coBongT = 0; p.nhanCd = 0.15; p.tk.cuop++; p.nang = Math.min(100, p.nang + 15);
       toaHat(o.x, 0.9, o.z, 14, 0xffffff, 5, 0.45, 0.6, 0, 0); songXungKich(o.x, 0.1, o.z, 0xaaffcc, 1.8, 0.4); tieng('tac');
@@ -405,7 +483,7 @@ function xetTac(p) {          // kiểm tra tắc bóng khi đang trượt
 }
 function lach(p, ix, iz) {
   if (p.lachCd > 0 || p.stun > 0 || p.truot > 0 || p.dashT > 0) return;
-  p.lachCd = 3.3 - p.nv.re * 0.12; let m = Math.hypot(ix, iz);
+  p.lachCd = (p.tt > 0 && p.ttKieu === 'chop') ? 0.25 : 3.3 - p.nv.re * 0.12; let m = Math.hypot(ix, iz);
   if (m < 0.2) { ix = Math.sin(p.ang); iz = Math.cos(p.ang); m = 1; }
   p.dashX = ix / m; p.dashZ = iz / m; p.dashV = 22; p.dashT = 0.2; tieng('chuyen');
   toaHat(p.x, 0.3, p.z, 8, 0xffffff, 3, 0.4, 0.6, 0, 0);
@@ -423,11 +501,11 @@ function thucTinh(p) {
   p.tt = GIAY_THUC_TINH; p.nang = 0; tieng('sam'); chopT = 0.8; rung = Math.max(rung, 0.5);
   songXungKich(p.x, 0.1, p.z, 0xffc84a, 5, 0.8); songXungKich(p.x, 0.1, p.z, 0x6ab8ff, 3, 0.6);
   toaHat(p.x, 1, p.z, 40, 0xffe070, 9, 0.9, 0.9, 0, 0);
-  if (p.nguoi) thongBao('THỨC TỈNH!', true);
+  if (p.nguoi) thongBao('THỨC TỈNH: ' + timTT(p.ttKieu).ten.toUpperCase() + '!', true);
 }
 function dungChieu(p) {
   if (p.chieuCd > 0 || p.stun > 0) return;
-  p.chieuCd = GIAY_HOI_CHIEU; const ma = p.nv.chieu.ma; tieng('chieu');
+  p.chieuCd = GIAY_HOI_CHIEU; const ma = p.chieu.ma; tieng('chieu');
   songXungKich(p.x, 0.1, p.z, 0xcf9bff, 2.4, 0.5);
   if (ma === 'sam') p.buff.sam = 10;
   else if (ma === 'tay') p.buff.tay = 4;
@@ -443,6 +521,15 @@ function dungChieu(p) {
     rung = Math.max(rung, 0.4);
   }
   else if (ma === 'luot') { let ix = Math.sin(p.ang), iz = Math.cos(p.ang); p.dashX = ix; p.dashZ = iz; p.dashV = 30; p.dashT = 0.26; }
+  else if (ma === 'nam') { p.buff.nam = 4; songXungKich(p.x, 0.1, p.z, 0xff6ad5, 7, 0.7); }
+  else if (ma === 'ma') { p.buff.ma = 3; toaHat(p.x, 1.2, p.z, 24, 0xd0d8ff, 4, 0.8, 0.9, 0, 0); }
+  else if (ma === 'dongbang') {
+    songXungKich(p.x, 0.1, p.z, 0x9ad8ff, 7.5, 0.8); chopT = Math.max(chopT, 0.3); tieng('sam');
+    for (const q of CT) {
+      if (q.doi === p.doi) continue; const d = Math.hypot(q.x - p.x, q.z - p.z);
+      if (d < 7.5 && q.buff.khien <= 0) { q.stun = 2.0; toaHat(q.x, 1, q.z, 10, 0xbfefff, 2, 0.5, 0.6, 0, 0); if (B.chu === q) { B.chu = null; B.vx = (q.x - p.x) / (d || 1) * 3; B.vz = (q.z - p.z) / (d || 1) * 3; B.vy = 1.5; B.daThu = false; } }
+    }
+  }
   if (p.nguoi) { const e = $('nangCh'); e.textContent = ''; }
 }
 
@@ -475,7 +562,9 @@ function apDung(p, inp, h) {
   let vmax = TOC_DO_CO_BAN * (0.75 + p.nv.toc * 0.05);
   if (!p.nguoi && p.doi === 1) vmax *= MUC_KHO[CH.kho].toc;   // chỉ đội đối thủ bị chậm đi ở mức dễ
   if (p.nguoi) vmax *= 1.06;
-  if (p.tt > 0) vmax *= 1.22; if (p.buff.toc > 0) vmax *= 1.55; if (p.buff.tay > 0) vmax *= 1.2;
+  if (p.tt > 0) vmax *= p.ttKieu === 'chop' ? 1.5 : p.ttKieu === 'bang' ? 1.1 : 1.22;
+  for (const q of CT) if (q.doi !== p.doi && q.tt > 0 && q.ttKieu === 'bang' && Math.hypot(q.x - p.x, q.z - p.z) < 7) { vmax *= 0.5; break; }   // Băng Giá làm đối thủ gần chậm lại
+  if (p.buff.toc > 0) vmax *= 1.55; if (p.buff.tay > 0) vmax *= 1.2;
   if (B.chu === p) vmax *= 0.86 + p.nv.re * 0.012; if (p.gong > 0.05) vmax *= 0.8; if (p.giu > 0) vmax *= 0.5;
   let ix = inp.ix, iz = inp.iz; const mm = Math.hypot(ix, iz); if (mm > 1) { ix /= mm; iz /= mm; }
   let tx = ix * vmax, tz = iz * vmax, kk = 11;
@@ -490,9 +579,9 @@ function apDung(p, inp, h) {
     if (muc !== null) p.ang -= gocChenh(p.ang, muc) * Math.min(1, h * 14);
   }
   // hào quang
-  if (p.tt > 0 || p.buff.toc > 0 || p.buff.khien > 0 || p.buff.sam > 0 || p.buff.cong > 0 || p.buff.tay > 0 || p.buff.xuyen > 0) {
+  if (p.tt > 0 || p.buff.toc > 0 || p.buff.khien > 0 || p.buff.sam > 0 || p.buff.cong > 0 || p.buff.tay > 0 || p.buff.xuyen > 0 || p.buff.nam > 0 || p.buff.ma > 0) {
     if (Math.random() < h * 40) {
-      const mau = p.tt > 0 ? (Math.random() < .5 ? 0xffc84a : 0x6ab8ff) : p.buff.khien > 0 ? 0x7ac8ff : p.buff.toc > 0 ? 0x7dffa0 : p.buff.tay > 0 ? 0xff9a3a : p.buff.xuyen > 0 ? 0xc48fff : 0xffee70;
+      const mau = p.tt > 0 ? (p.ttKieu === 'bang' ? (Math.random() < .5 ? 0xbfefff : 0x6ab8ff) : p.ttKieu === 'loc' ? (Math.random() < .5 ? 0xb0ffb0 : 0xffffff) : p.ttKieu === 'chop' ? 0xffffff : (Math.random() < .5 ? 0xffc84a : 0x6ab8ff)) : p.buff.ma > 0 ? 0xd0d8ff : p.buff.nam > 0 ? 0xff6ad5 : p.buff.khien > 0 ? 0x7ac8ff : p.buff.toc > 0 ? 0x7dffa0 : p.buff.tay > 0 ? 0xff9a3a : p.buff.xuyen > 0 ? 0xc48fff : 0xffee70;
       hat(p.x + ngauNhien(-.4, .4), ngauNhien(0.1, 1.8), p.z + ngauNhien(-.4, .4), ngauNhien(-.5, .5), ngauNhien(1.5, 3.5), ngauNhien(-.5, .5), mau, 0.5, 0.7, 0.1, 0);
     }
   }
@@ -580,6 +669,11 @@ function xuLyBong(h) {
       if (g.doi === 0) thongBao('CỨU THUA!', true, 900);
     }
   }
+  // Nam Châm kéo bóng
+  if (!B.chu) for (const p of CT) {
+    if (p.buff.nam <= 0) continue; const dx = p.x - B.x, dz = p.z - B.z, d = Math.hypot(dx, dz);
+    if (d < 9 && d > 0.3) { B.vx += dx / d * 30 * h; B.vz += dz / d * 30 * h; if (Math.random() < h * 20) hat(B.x, B.y, B.z, 0, 1, 0, 0xff6ad5, 0.3, 0.5, 0.1, 0); }
+  }
   // nhặt bóng
   if (B.chu) return;
   let tot = null, td = 99;
@@ -621,7 +715,7 @@ function aiQuyet(p, kho) {
     di(gx - dir * 3, tz);
     if (p.tt <= 0 && p.nang >= 100 && dg < 30 * K) A.act = { k: 'tt' };
     else if (p.chieuCd <= 0) {
-      const ma = p.nv.chieu.ma;
+      const ma = p.chieu.ma;
       if ((ma === 'sam' || ma === 'cong' || ma === 'xuyen') && dg < 24 * K) A.act = { k: 'chieu' };
       else if ((ma === 'toc' || ma === 'luot') && dg > 14 * K && od > 3) A.act = { k: 'chieu' };
       else if (ma === 'khien' && od < 3.5) A.act = { k: 'chieu' };
@@ -681,7 +775,7 @@ function aiBuoc(p, h) {
     else hatBong(p, manh(p), 0);
   }
   // tắc bóng (không tắc ngay khi người chơi vừa nhận bóng, để bé kịp xoay xở)
-  if (B.chu && B.chu.doi !== p.doi && p.vt !== 'tm' && p.tacCd <= 0 && !(B.chu.nguoi && B.chu.coBongT < 1.0)) {
+  if (B.chu && B.chu.doi !== p.doi && p.vt !== 'tm' && p.tacCd <= 0 && B.chu.buff.ma <= 0 && !(B.chu.nguoi && B.chu.coBongT < 1.0)) {
     const d2 = Math.hypot(B.chu.x - p.x, B.chu.z - p.z);
     if (d2 < 1.9 && Math.random() < h * 2.6 * kho.cuopBong) { p.ang = Math.atan2(B.chu.x - p.x, B.chu.z - p.z); tac(p); }
   }
@@ -771,8 +865,18 @@ function ketThuc() {
   let nhacMat = tongGiayChoi >= NGHI_MAT_PHUT * 60 ? '<p style="color:#ffd23a;font-weight:800;font-size:calc(var(--u)*1.7)">👀 Bạn đã chơi khá lâu rồi. Hãy nghỉ mắt, nhìn xa một lúc nhé!</p>' : '';
   if (nhacMat) tongGiayChoi = 0;
   let ky = 0; try { ky = +localStorage.getItem('ego3d_thang') || 0; if (kq === 'THẮNG') { ky++; localStorage.setItem('ego3d_thang', ky); } } catch (e) { }
+  // thưởng xu cho người chơi
+  let xuThem = 0, lyDo = [];
+  if (NG) {
+    const kqXu = kq === 'THẮNG' ? XU_THUONG.thang : kq === 'HÒA' ? XU_THUONG.hoa : XU_THUONG.thua; xuThem += kqXu; lyDo.push((kq === 'THẮNG' ? 'thắng' : kq === 'HÒA' ? 'hòa' : 'thi đấu') + ' +' + kqXu);
+    if (NG.tk.ban) { xuThem += NG.tk.ban * XU_THUONG.ban; lyDo.push(NG.tk.ban + ' bàn +' + NG.tk.ban * XU_THUONG.ban); }
+    if (NG.tk.kt) { xuThem += NG.tk.kt * XU_THUONG.kienTao; lyDo.push(NG.tk.kt + ' kiến tạo +' + NG.tk.kt * XU_THUONG.kienTao); }
+    if (mvp === NG) { xuThem += XU_THUONG.mvp; lyDo.push('MVP +' + XU_THUONG.mvp); }
+    KHO.xu += xuThem; luuKHO();
+  }
   $('ketQuaHop').innerHTML = '<div class="ketQuaTo chu3d" style="color:' + mau + '">' + kq + '!</div><div class="diemTo">' + diem[0] + ' – ' + diem[1] + '</div>' +
     '<div style="font-size:calc(var(--u)*1.8);margin-bottom:.4em">MVP trận đấu: <b style="color:#ffe36a">' + mvp.nv.ten + '</b>' + (ky ? ' · Số trận thắng của bạn: ' + ky : '') + '</div>' +
+    (xuThem ? '<div style="font-size:calc(var(--u)*1.7);margin-bottom:.4em;color:#ffe36a;font-weight:900">🪙 +' + xuThem + ' xu (' + lyDo.join(', ') + ') · Bạn có ' + KHO.xu + ' xu</div>' : '') +
     '<table id="bangKQ" class="ket10"><tr><th style="text-align:left">Cầu thủ</th><th>Lớp</th><th>Bàn</th><th>Kiến tạo</th><th>Cướp</th><th>Cản phá</th></tr>' + hang + '</table>' + nhacMat +
     '<button class="nutLon vang" id="kqLai">Chơi lại</button><button class="nutLon" id="kqVe">Về sảnh</button>';
   $('kqLai').onclick = () => { moAmThanh(); tieng('coi'); batDauGhep(); };
@@ -792,6 +896,7 @@ $('nutDung').onclick = () => { moAmThanh(); tamDung(); };
 $('dungTiep').onclick = () => { if (tt !== 'tamdung') return; tt = ttTruoc; hienLop(['hud', 'cam']); };
 $('dungVe').onclick = () => veSanh();
 function hienLop(ds) {
+  $('cuaHangLop').classList.remove('hien');
   for (const id of ['sanh', 'ghep', 'hud', 'cam', 'ketQuaLop', 'dungLop']) $(id).classList.toggle('hien', ds.includes(id));
   if (!ds.includes('hud')) { $('thongBao').className = ''; $('xemLai').style.display = 'none'; $('gongBar').style.display = 'none'; }
 }
@@ -807,7 +912,7 @@ function capNhatHUD(ep) {
     $('nangTTi').style.width = (NG.tt > 0 ? NG.tt / GIAY_THUC_TINH * 100 : NG.nang) + '%';
     $('nangTT').classList.toggle('day', NG.nang >= 100 && NG.tt <= 0);
     const cs = NG.chieuCd > 0 ? 'hồi ' + Math.ceil(NG.chieuCd) + ' giây' : 'SẴN SÀNG';
-    $('nangCh').textContent = NG.nang >= 100 && NG.tt <= 0 ? '⚡ THỨC TỈNH sẵn sàng (F)' : 'Chiêu ' + NG.nv.chieu.ten + ': ' + cs;
+    $('nangCh').textContent = NG.nang >= 100 && NG.tt <= 0 ? '⚡ THỨC TỈNH sẵn sàng (F)' : 'Chiêu ' + NG.chieu.ten + ': ' + cs;
     const hoi = document.querySelector('#cChieu .hoi'); if (hoi) hoi.style.height = (NG.chieuCd / GIAY_HOI_CHIEU * 100) + '%';
     $('cTT').classList.toggle('san', NG.nang >= 100 && NG.tt <= 0);
   }
