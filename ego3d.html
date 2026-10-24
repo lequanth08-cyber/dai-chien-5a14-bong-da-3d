@@ -406,7 +406,7 @@ const MAU_GIAY = ['#ffffff', '#ffd23a', '#2de08a', '#ff5ac8'];
 
 // ===================== CỬA HÀNG (xu kiếm được khi chơi, không dùng tiền thật) =====================
 const XU_BAN_DAU = 60;                                             // xu có sẵn khi chơi lần đầu
-const XU_THUONG = { kienTao: 5, thang: 40, hoa: 15, thua: 5, mvp: 20 };   // thưởng sau mỗi trận
+const XU_MVP = 20;                                                 // xu thưởng khi bạn là MVP trận đấu
 const XU_MOI_BAN = { de: 3, vua: 5, kho: 10 };                             // mỗi bàn bạn ghi được thưởng bao nhiêu xu, tùy mức khó
 const GIA_NGAU_NHIEN = 15;                                         // giá "Thử vận may": luôn nhận một chiêu mới chưa có
 // 10 chiêu bấm Q. Mỗi bạn có sẵn chiêu riêng của mình (không mất xu), muốn chiêu khác thì mua ở cửa hàng.
@@ -1883,12 +1883,10 @@ function ketThuc() {
   // thưởng xu cho người chơi
   let xuThem = 0, lyDo = [];
   if (NG) {
-    const kqXu = kq === 'THẮNG' ? XU_THUONG.thang : kq === 'HÒA' ? XU_THUONG.hoa : XU_THUONG.thua; xuThem += kqXu; lyDo.push((kq === 'THẮNG' ? 'thắng' : kq === 'HÒA' ? 'hòa' : 'thi đấu') + ' +' + kqXu);
     const xuBan = XU_MOI_BAN[CH.kho] || XU_MOI_BAN.de;
     if (NG.tk.ban) { xuThem += NG.tk.ban * xuBan; lyDo.push(NG.tk.ban + ' bàn ×' + xuBan + ' (mức ' + ({ de: 'Dễ', vua: 'Vừa', kho: 'Khó' })[CH.kho] + ') +' + NG.tk.ban * xuBan); }
-    if (NG.tk.kt) { xuThem += NG.tk.kt * XU_THUONG.kienTao; lyDo.push(NG.tk.kt + ' kiến tạo +' + NG.tk.kt * XU_THUONG.kienTao); }
-    if (mvp === NG) { xuThem += XU_THUONG.mvp; lyDo.push('MVP +' + XU_THUONG.mvp); }
-    KHO.xu += xuThem; luuKHO();
+    if (mvp === NG) { xuThem += XU_MVP; lyDo.push('MVP +' + XU_MVP); }
+    if (xuThem) { KHO.xu += xuThem; luuKHO(); }
   }
   $('ketQuaHop').innerHTML = '<div class="ketQuaTo chu3d" style="color:' + mau + '">' + kq + '!</div><div class="diemTo">' + diem[0] + ' – ' + diem[1] + '</div>' +
     '<div style="font-size:calc(var(--u)*1.8);margin-bottom:.4em">MVP trận đấu: <b style="color:#ffe36a">' + mvp.nv.ten + '</b>' + (ky ? ' · Số trận thắng của bạn: ' + ky : '') + '</div>' +
