@@ -174,6 +174,8 @@ function veNguoi(p) {
   if (p.dive > 0) { const u = Math.sin((1 - p.dive / 0.55) * 3.14); nghZ = -p.diveDir * 1.15 * u; thanY = 0.5 * u; tayT = tayP = 3.0 * u; tayZ = 0.3; }
   if (p.stun > 0) { ngha = 0.2; tayT = tayP = -0.3; chanT = chanP = 0; tayZ = 0.6 + Math.sin(p.phase * 3) * 0.2; }
   if (p.giu > 0) { tayT = tayP = -1.6; tayZ = 0.2; }
+  if (p.lonT > 0) { const u = 1 - p.lonT / 0.65; ngha = -u * Math.PI * 2; chanP = -1.3; chanT = 0.9; tayT = tayP = 2.6; tayZ = 0.6; thanY = 0; }
+  else if (p.nhayT > 0) { const u = 1 - p.nhayT / 0.5; chanT = -0.6; chanP = 1.2 - u * 2.2; ngha = 0.3; tayT = tayP = 1.6; tayZ = 0.5; }
   if (p.mung) {
     if (p.mung === 'nhay') { tayT = tayP = 3.0; tayZ = 0.5; chanT = Math.sin(p.mungT * 14) * 0.5; chanP = -chanT; }
     else if (p.mung === 'xoay') { tayT = tayP = 2.8; tayZ = 1.1; }

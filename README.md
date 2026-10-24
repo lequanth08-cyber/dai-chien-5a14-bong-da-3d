@@ -19,8 +19,10 @@ Mỗi cầu thủ có 6 chỉ số: Tốc độ, Sút, Phòng thủ, Chuyền, R
 Sau mỗi trận bạn nhận xu (thắng 40, hòa 15, thi đấu 5, mỗi bàn 10, mỗi kiến tạo 5, MVP 20). Xu chỉ kiếm được bằng cách chơi, không mua bằng tiền thật. Ở sảnh chờ bấm **Cửa hàng** để:
 
 - Mua chiêu (phím Q, nút CHIÊU): 10 chiêu như Sút Sấm Sét, Xoáy Cong, Sút Xuyên Phá, Tăng Tốc, Lướt Gió, Khiên Sắt, Bàn Tay Thép, Nam Châm, Đóng Băng, Bóng Ma. Mỗi bạn luôn có sẵn chiêu riêng của mình.
-- Mua kiểu Thức tỉnh (phím F, nút THỨC TỈNH): Bão Lửa (có sẵn), Băng Giá, Lốc Xoáy, Tia Chớp.
-- **Thử vận may** (30 xu): luôn nhận một chiêu mới chưa có, không bao giờ trượt. Khi đã có đủ chiêu, nút này chọn ngẫu nhiên một chiêu để dùng, miễn phí.
+- Mua kiểu Thức tỉnh (phím F, nút THỨC TỈNH), 13 kiểu: Bão Lửa (có sẵn), Băng Giá, Lốc Xoáy, Tia Chớp, Xe Đạp Chổng Ngược (mọi cú sút thành móc bóng lộn nhào), Rainbow (phím Cách hất cầu vồng qua đầu rồi bóng rơi lại chân), Vô-lê Trên Không (sút được bóng đang bay cao), Xoáy Góc Xa (tự ngắm góc xa và xoáy), Mu Bàn Chân (sút căng không cần gồng), La Croqueta và Elastico (phím R thành động tác qua người làm hậu vệ đứng hình), Đỡ Bóng Biến Hướng (nhận bóng là vọt đi ngay), Đỡ Bóng Siêu Cấp (bóng dính chân, không ai tắc được).
+
+Tắc bóng (Shift hoặc nút TẮC) trượt dài khoảng 7 m, chỉnh ở `GIAY_TRUOT_TAC` và `TOC_TRUOT_TAC`.
+- **Thử vận may** (15 xu): luôn nhận một chiêu mới chưa có, không bao giờ trượt. Khi đã có đủ chiêu, nút này chọn ngẫu nhiên một chiêu để dùng, miễn phí.
 
 Giá và phần thưởng chỉnh ở `CHIEU_KHO`, `THUC_TINH_KHO`, `XU_THUONG` trong `nguon/a_dung3d.js`.
 

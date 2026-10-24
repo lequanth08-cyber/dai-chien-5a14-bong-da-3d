@@ -15,10 +15,13 @@ const BONG_R = 0.4;          // bán kính quả bóng
 const TRONG_LUC = 15;        // trọng lực kéo bóng xuống
 const TOC_DO_CO_BAN = 9;     // tốc độ chạy cơ bản (mét/giây)
 const LUC_SUT_NHO = 17;      // lực sút khi chỉ bấm nhẹ
-const LUC_SUT_LON = 38;      // lực sút khi giữ đủ lâu
+const LUC_SUT_LON = 38;
+const TOC_BONG_TOI_DA = 50;  // bóng không bao giờ bay nhanh hơn mức này (mét/giây), kể cả Siêu sút      // lực sút khi giữ đủ lâu
 const GIAY_GONG = 0.9;       // giữ chuột bao lâu thì đủ lực
-const GIAY_HOI_CHIEU = 12;   // chiêu đặc trưng hồi lại sau bao nhiêu giây
-const GIAY_THUC_TINH = 6;    // thời gian Thức tỉnh kéo dài
+const GIAY_TRUOT_TAC = 0.62; // tắc bóng trượt bao lâu (giây); càng lớn trượt càng xa
+const TOC_TRUOT_TAC = 16;    // tốc độ bắt đầu trượt
+const GIAY_HOI_CHIEU = 9;    // chiêu đặc trưng hồi lại sau bao nhiêu giây
+const GIAY_THUC_TINH = 7;    // thời gian Thức tỉnh kéo dài
 const CHAM_LAI_GIAY = 0.45;  // thời gian quay chậm khi sút mạnh
 const NGHI_MAT_PHUT = 15;    // sau bao nhiêu phút chơi thì nhắc nghỉ mắt
 const LIM_X = SAN_DAI - 0.8;  // cầu thủ không chạy quá giới hạn này (dọc)
@@ -36,26 +39,35 @@ const MAU_GIAY = ['#ffffff', '#ffd23a', '#2de08a', '#ff5ac8'];
 // ===================== CỬA HÀNG (xu kiếm được khi chơi, không dùng tiền thật) =====================
 const XU_BAN_DAU = 60;                                             // xu có sẵn khi chơi lần đầu
 const XU_THUONG = { ban: 10, kienTao: 5, thang: 40, hoa: 15, thua: 5, mvp: 20 };   // thưởng sau mỗi trận
-const GIA_NGAU_NHIEN = 30;                                         // giá "Thử vận may": luôn nhận một chiêu mới chưa có
+const GIA_NGAU_NHIEN = 15;                                         // giá "Thử vận may": luôn nhận một chiêu mới chưa có
 // 10 chiêu bấm Q. Mỗi bạn có sẵn chiêu riêng của mình (không mất xu), muốn chiêu khác thì mua ở cửa hàng.
 const CHIEU_KHO = [
-  { ma: 'sam', icon: '⚡', ten: 'Sút Sấm Sét', mt: 'Cú sút kế tiếp cực mạnh, có tia chớp xanh.', gia: 60 },
-  { ma: 'cong', icon: '🌈', ten: 'Xoáy Cong', mt: 'Cú sút kế tiếp bay cong như cầu vồng.', gia: 50 },
-  { ma: 'xuyen', icon: '🎯', ten: 'Sút Xuyên Phá', mt: 'Cú sút kế tiếp xuyên qua mọi hậu vệ, chỉ thủ môn chạm được.', gia: 90 },
-  { ma: 'toc', icon: '👟', ten: 'Tăng Tốc', mt: 'Chạy nhanh hơn rất nhiều trong 4 giây.', gia: 50 },
-  { ma: 'luot', icon: '💨', ten: 'Lướt Gió', mt: 'Lao vọt về phía trước, xuyên qua mọi người.', gia: 60 },
-  { ma: 'khien', icon: '🛡', ten: 'Khiên Sắt', mt: 'Không bị tắc bóng và đẩy lùi đối thủ xung quanh.', gia: 70 },
-  { ma: 'tay', icon: '🧤', ten: 'Bàn Tay Thép', mt: 'Tay dài gấp đôi và chạy nhanh hơn trong 4 giây (hợp với thủ môn).', gia: 40 },
-  { ma: 'nam', icon: '🧲', ten: 'Nam Châm', mt: 'Trong 4 giây, bóng ở gần tự lăn về chân bạn.', gia: 80 },
-  { ma: 'dongbang', icon: '❄', ten: 'Đóng Băng', mt: 'Mọi đối thủ quanh bạn đứng im 2 giây.', gia: 100 },
-  { ma: 'ma', icon: '👻', ten: 'Bóng Ma', mt: 'Trong 3 giây đối thủ không tắc được bạn và không đuổi theo bạn.', gia: 110 }
+  { ma: 'sam', icon: '⚡', ten: 'Sút Sấm Sét', mt: 'Cú sút kế tiếp cực mạnh, có tia chớp xanh.', gia: 30 },
+  { ma: 'cong', icon: '🌈', ten: 'Xoáy Cong', mt: 'Cú sút kế tiếp bay cong như cầu vồng.', gia: 25 },
+  { ma: 'xuyen', icon: '🎯', ten: 'Sút Xuyên Phá', mt: 'Cú sút kế tiếp xuyên qua mọi hậu vệ, chỉ thủ môn chạm được.', gia: 45 },
+  { ma: 'toc', icon: '👟', ten: 'Tăng Tốc', mt: 'Chạy nhanh hơn rất nhiều trong 4 giây.', gia: 25 },
+  { ma: 'luot', icon: '💨', ten: 'Lướt Gió', mt: 'Lao vọt về phía trước, xuyên qua mọi người.', gia: 30 },
+  { ma: 'khien', icon: '🛡', ten: 'Khiên Sắt', mt: 'Không bị tắc bóng và đẩy lùi đối thủ xung quanh.', gia: 35 },
+  { ma: 'tay', icon: '🧤', ten: 'Bàn Tay Thép', mt: 'Tay dài gấp đôi và chạy nhanh hơn trong 4 giây (hợp với thủ môn).', gia: 20 },
+  { ma: 'nam', icon: '🧲', ten: 'Nam Châm', mt: 'Trong 4 giây, bóng ở gần tự lăn về chân bạn.', gia: 40 },
+  { ma: 'dongbang', icon: '❄', ten: 'Đóng Băng', mt: 'Mọi đối thủ quanh bạn đứng im 2 giây.', gia: 50 },
+  { ma: 'ma', icon: '👻', ten: 'Bóng Ma', mt: 'Trong 3 giây đối thủ không tắc được bạn và không đuổi theo bạn.', gia: 55 }
 ];
 // 4 kiểu Thức tỉnh (bấm F khi thanh năng lượng đầy). "lua" có sẵn.
 const THUC_TINH_KHO = [
   { ma: 'lua', icon: '🔥', ten: 'Bão Lửa', mt: 'Chạy nhanh hơn, mọi cú sút đều là Siêu sút bốc lửa.', gia: 0 },
-  { ma: 'bang', icon: '🧊', ten: 'Băng Giá', mt: 'Đối thủ đến gần bị chậm đi một nửa, không ai tắc được bạn, sút vẫn là Siêu sút.', gia: 160 },
-  { ma: 'loc', icon: '🌪', ten: 'Lốc Xoáy', mt: 'Siêu sút bay cong dữ dội, rất khó bắt.', gia: 150 },
-  { ma: 'chop', icon: '💫', ten: 'Tia Chớp', mt: 'Chạy nhanh gấp rưỡi và lách liên tục không cần chờ hồi.', gia: 200 }
+  { ma: 'bang', icon: '🧊', ten: 'Băng Giá', mt: 'Đối thủ đến gần bị chậm đi một nửa, không ai tắc được bạn, sút vẫn là Siêu sút.', gia: 70 },
+  { ma: 'loc', icon: '🌪', ten: 'Lốc Xoáy', mt: 'Siêu sút bay cong dữ dội, rất khó bắt.', gia: 65 },
+  { ma: 'chop', icon: '💫', ten: 'Tia Chớp', mt: 'Chạy nhanh gấp rưỡi và lách liên tục không cần chờ hồi.', gia: 90 },
+  { ma: 'xedap', icon: '🚲', ten: 'Xe Đạp Chổng Ngược', mt: 'Mọi cú sút thành cú móc bóng lộn nhào trên không, cực mạnh và bay bổng.', gia: 95 },
+  { ma: 'rainbow', icon: '🌈', ten: 'Rainbow', mt: 'Phím Hất (Cách) thành hất cầu vồng: bóng bay qua đầu đối thủ rồi rơi lại đúng chân bạn.', gia: 60 },
+  { ma: 'vole', icon: '🦅', ten: 'Vô-lê Trên Không', mt: 'Sút được cả khi bóng đang bay trên cao: bật nhảy vô-lê sấm sét.', gia: 75 },
+  { ma: 'gocxa', icon: '🎯', ten: 'Xoáy Góc Xa', mt: 'Mọi cú sút tự ngắm góc xa khung thành và xoáy cong, thủ môn rất khó bắt.', gia: 70 },
+  { ma: 'mu', icon: '💥', ten: 'Mu Bàn Chân', mt: 'Sút mu bàn chân lực cực lớn, không cần gồng, bóng đi căng và thấp, thủ môn khó cản.', gia: 70 },
+  { ma: 'croqueta', icon: '🪄', ten: 'La Croqueta', mt: 'Phím Lách (R) thành La Croqueta: kéo bóng sang ngang cực nhanh, hậu vệ gần bị đứng hình.', gia: 65 },
+  { ma: 'elastico', icon: '🌀', ten: 'Elastico', mt: 'Phím Lách (R) thành Elastico: giả đảo chân rồi vọt đi, hậu vệ trước mặt đứng hình.', gia: 65 },
+  { ma: 'bienhuong', icon: '↪', ten: 'Đỡ Bóng Biến Hướng', mt: 'Vừa nhận bóng là lập tức vọt đi theo hướng đang chạy, không bị tắc trong giây đầu.', gia: 55 },
+  { ma: 'sieucap', icon: '🧤', ten: 'Đỡ Bóng Siêu Cấp', mt: 'Bóng dính chân: không ai tắc được, bóng gần tự lăn về và cắt được mọi đường chuyền.', gia: 85 }
 ];
 
 // 10 cầu thủ của hai lớp. 6 bạn đầu chọn được ở sảnh chờ, 4 bạn còn lại do máy điều khiển.

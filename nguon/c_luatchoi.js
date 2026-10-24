@@ -24,7 +24,7 @@ function layChieuChon(nv) {
 }
 let tongGiayChoi = 0, daNhacMat = false, gioThuc = 0;
 
-const B = { x: 0, y: BONG_R, z: 0, vx: 0, vy: 0, vz: 0, chu: null, cong: 0, congT: 0, sieu: false, daThu: false, cuoiCham: null, passer: null, passerT: 0, nhan: null, quayX: 0, quayZ: 0, xuyen: false };
+const B = { x: 0, y: BONG_R, z: 0, vx: 0, vy: 0, vz: 0, chu: null, cong: 0, congT: 0, sieu: false, daThu: false, cuoiCham: null, passer: null, passerT: 0, nhan: null, quayX: 0, quayZ: 0, xuyen: false, manh: false, cauVong: null, cauVongT: 0 };
 let CT = [], NG = null;                 // CT = 6 cầu thủ, NG = cầu thủ của người chơi
 const diem = [0, 0];
 let thoiGian = 180, vang = false, doiTran = null, ghibanT = 0, chuyenSanT = 0, demT = 0, nhapSanT = 0, doiBatDau = 0;
@@ -243,7 +243,7 @@ function taoTran() {
       doi, nv, idx: v.idx, vt: v.vt, lane: v.lane, nguoi: minh, mh, x: 0, z: 0, vx: 0, vz: 0, ang: 0, phase: Math.random() * 6, spd: 0,
       kick: 0, truot: 0, dive: 0, diveDir: 1, stun: 0, gong: 0, nhanCd: 0, tacCd: 0, chieuCd: 0, tt: 0, nang: 0, lachCd: 0, xoayCd: 0, xoayAnim: 0,
       buff: { sam: 0, tay: 0, khien: 0, toc: 0, cong: 0, xuyen: 0, nam: 0, ma: 0 }, giu: 0, giuHold: 0, coBongT: 0, mung: null, mungT: 0, ny: 0, xoayNguoi: 0,
-      dashT: 0, dashX: 0, dashZ: 0, dashV: 0, tacXong: false, auraT: 0, sx: 0, sz: 0, tx0: 0, tz0: 0, tk: { ban: 0, kt: 0, cuop: 0, cuu: 0 },
+      dashT: 0, dashX: 0, dashZ: 0, dashV: 0, tacXong: false, auraT: 0, lonT: 0, nhayT: 0, sx: 0, sz: 0, tx0: 0, tz0: 0, tk: { ban: 0, kt: 0, cuop: 0, cuu: 0 },
       ai: { t: Math.random() * 0.2, tx: 0, tz: 0, act: null },
       chieu: minh ? layChieuChon(nv) : nv.chieu, ttKieu: minh ? CH.tt : 'lua'
     };
@@ -255,7 +255,7 @@ function taoTran() {
   diem[0] = diem[1] = 0; thoiGian = CH.gio; vang = false; REC.length = 0;
   datViTri(0); datBong();
 }
-function datBong() { B.x = B.z = 0; B.y = BONG_R; B.vx = B.vy = B.vz = 0; B.chu = null; B.cong = B.congT = 0; B.sieu = false; B.xuyen = false; B.daThu = false; B.nhan = null; B.passer = null; B.cuoiCham = null; }
+function datBong() { B.x = B.z = 0; B.y = BONG_R; B.vx = B.vy = B.vz = 0; B.chu = null; B.cong = B.congT = 0; B.sieu = false; B.xuyen = false; B.manh = false; B.cauVong = null; B.daThu = false; B.nhan = null; B.passer = null; B.cuoiCham = null; }
 function datViTri(doiBD) {
   doiBatDau = doiBD;
   for (const p of CT) {
@@ -392,7 +392,11 @@ function nguoiBuoc(p, xung) {
 function manh(p) { return p.doi === 0 ? 1 : -1; }   // hướng tấn công: đội 0 đá sang +x
 function nhanBong(p) {
   if (B.chu && B.chu !== p && B.chu.vt === 'tm') B.chu.giuHold = 0;
-  B.chu = p; B.nhan = null; B.daThu = false; B.congT = 0; B.sieu = false; B.xuyen = false; p.coBongT = 0; p.giuHold = 0;
+  B.chu = p; B.nhan = null; B.daThu = false; B.congT = 0; B.sieu = false; B.xuyen = false; B.manh = false; B.cauVong = null; p.coBongT = 0; p.giuHold = 0;
+  if ((p.tt > 0 && p.ttKieu === 'bienhuong') && p.dashT <= 0 && p.stun <= 0) {       // Đỡ bóng biến hướng: vừa nhận là vọt đi, không bị tắc 0,8 giây
+    p.dashX = Math.sin(p.ang); p.dashZ = Math.cos(p.ang); p.dashV = 20; p.dashT = 0.22; p.buff.khien = Math.max(p.buff.khien, 0.8);
+    songXungKich(p.x, 0.1, p.z, 0x9affc8, 2.4, 0.4); toaHat(p.x, 0.4, p.z, 10, 0x9affc8, 4, 0.4, 0.6, 0, 0); tieng('chuyen');
+  }
   if (B.cuoiCham && B.cuoiCham !== p && B.cuoiCham.doi !== p.doi) { /* cướp được bóng từ đối thủ */ }
   B.cuoiCham = p;
 }
@@ -403,24 +407,34 @@ function sut(p, dx, dz, luc, loai) {
   let xuyen = false; if (p.buff.xuyen > 0 && loai !== 'hat') { xuyen = true; p.buff.xuyen = 0; }
   if (p.tt > 0 && p.ttKieu !== 'chop') sieu = true;
   if (p.tt > 0 && p.ttKieu === 'loc' && loai !== 'hat') cong = 16 * (Math.random() < .5 ? 1 : -1);
+  const kieuTT = p.tt > 0 ? p.ttKieu : '';
+  if (kieuTT === 'gocxa' && loai !== 'hat') cong = 9 * (Math.random() < .5 ? 1 : -1);
+  if (kieuTT === 'mu' && loai !== 'hat') luc = 1;
+  if (loai === 'xedap' || loai === 'vole') sieu = true;
   if (p.buff.cong > 0) { p.buff.cong = 0; cong = 10 * (Math.abs(p.z) < 1.5 ? (Math.random() < .5 ? 1 : -1) : (-Math.sign(p.z * dx) || 1)); }
   let ax = dx, az = dz;
   const gx = dirG * SAN_DAI, ex = gx - p.x, ez = -p.z, dg = Math.hypot(ex, ez) || 1;
   if (loai !== 'hat' && dg < 58 && (dx * ex + dz * ez) / dg > 0.74) {       // hỗ trợ ngắm: kéo về góc xa thủ môn
     const gk = CT.find(q => q.doi !== p.doi && q.vt === 'tm');
-    const gz = (gk ? (gk.z >= 0 ? -1 : 1) : 1) * (KHUNG_RONG - 1.1) * Math.min(1, 0.5 + luc);
+    const gz = (gk ? (gk.z >= 0 ? -1 : 1) : 1) * (KHUNG_RONG - (kieuTT === 'gocxa' ? 0.6 : 1.1)) * (kieuTT === 'gocxa' ? 1 : Math.min(1, 0.5 + luc));
     let bx = gx - p.x, bz = gz - p.z; const bm = Math.hypot(bx, bz) || 1; bx /= bm; bz /= bm;
-    const he = p.nguoi ? 0.92 : 1; ax = noi(dx, bx, he); az = noi(dz, bz, he); const am = Math.hypot(ax, az) || 1; ax /= am; az /= am;
+    const he = (kieuTT === 'gocxa' || kieuTT === 'mu') ? 1 : p.nguoi ? 0.92 : 1; ax = noi(dx, bx, he); az = noi(dz, bz, he); const am = Math.hypot(ax, az) || 1; ax /= am; az /= am;
   }
   if (!p.nguoi) { const a = (Math.random() - .5) * 2 * (p.doi === 0 ? 0.3 : MUC_KHO[CH.kho].saiSut) * 0.55, c = Math.cos(a), s = Math.sin(a); const nx = ax * c - az * s, nz = ax * s + az * c; ax = nx; az = nz; }
   let sp = noi(LUC_SUT_NHO, LUC_SUT_LON, luc) * (0.85 + p.nv.sut * 0.025); if (sieu) sp *= 1.3;
   let vy = loai === 'hat' ? 8.8 : 0.8 + luc * 4.2;
   if (loai === 'hat') sp = 12 + luc * 3;
-  B.chu = null; B.vx = ax * sp; B.vz = az * sp; B.vy = vy; B.cong = cong; B.congT = cong ? 1.25 : 0; B.sieu = sieu; B.xuyen = xuyen; B.daThu = false; B.nhan = null;
+  if (loai === 'xedap') { sp *= 1.2; vy = 5.5 + luc * 3; p.lonT = 0.65; }
+  if (loai === 'vole') { sp *= 1.15; vy = 1.6; }
+  if (kieuTT === 'mu' && loai !== 'hat') { sp *= 1.3; vy = 0.5; }
+  if (loai === 'rainbow') { sp = Math.max(p.spd, 3) + 3; vy = 9.5; B.cauVongT = 2.2; }
+  sp = Math.min(sp, TOC_BONG_TOI_DA);   // không cho bóng bay nhanh quá mức
+  B.chu = null; B.vx = ax * sp; B.vz = az * sp; B.vy = vy; B.cong = cong; B.congT = cong ? 1.25 : 0; B.sieu = sieu; B.xuyen = xuyen; B.manh = (kieuTT === 'mu' && loai !== 'hat'); B.cauVong = loai === 'rainbow' ? p : null; B.daThu = false; B.nhan = loai === 'rainbow' ? p : null;
   if (xuyen) { songXungKich(B.x, 0.12, B.z, 0xc48fff, 3.5, 0.6); for (let i = 0; i < 16; i++) hat(B.x, 0.6, B.z, ngauNhien(-5, 5), ngauNhien(0, 4), ngauNhien(-5, 5), 0xd9a6ff, 0.5, 0.5, 0, 0); chopT = Math.max(chopT, 0.35); }
   B.cuoiCham = p; p.nhanCd = 0.4; p.kick = 0.3; p.ang = Math.atan2(ax, az); p.nang = Math.min(100, p.nang + 4);
   B.x = p.x + ax * 0.9; B.z = p.z + az * 0.9; if (B.y < 0.5) B.y = 0.5;
   // hiệu ứng sút
+  if (loai === 'rainbow') { p.nhanCd = 0.45; p.kick = 0.2; songXungKich(B.x, 0.12, B.z, 0xffb3ea, 1.6, 0.4); tieng('chuyen'); return; }
   const cung = luc > 0.6 || sieu;
   tieng(sieu ? 'sam' : cung ? 'sutManh' : 'sut');
   songXungKich(B.x, 0.12, B.z, sieu ? 0x6ab8ff : 0xffffff, 1.2 + luc * 2.6, 0.55);
@@ -451,12 +465,13 @@ function chuyen(p, dx, dz) {
 }
 function hatBong(p, dx, dz) {
   if (B.chu !== p || p.hatCd > 0) return; p.hatCd = 0.8;
+  if ((p.tt > 0 && p.ttKieu === 'rainbow')) { sut(p, Math.sin(p.ang), Math.cos(p.ang), 0.5, 'rainbow'); p.nhayT = 0.4; return; }
   sut(p, dx, dz, 0.45, 'hat'); tieng('chuyen');
 }
 function tac(p) {
   if (p.tacCd > 0 || p.stun > 0 || p.truot > 0 || p.dashT > 0) return;
   if (B.chu === p) return;
-  p.tacCd = (p.nguoi ? 0.7 : 1.0) - p.nv.the * 0.02; p.truot = 0.38; p.tacXong = false; p.dashX = Math.sin(p.ang); p.dashZ = Math.cos(p.ang); p.dashV = 13;
+  p.tacCd = (p.nguoi ? 0.7 : 1.0) - p.nv.the * 0.02; p.truot = GIAY_TRUOT_TAC; p.tacXong = false; p.dashX = Math.sin(p.ang); p.dashZ = Math.cos(p.ang); p.dashV = TOC_TRUOT_TAC;
   tieng('tac'); toaHat(p.x, 0.2, p.z, 6, 0xb8e0a0, 2.4, 0.5, 0.8, 0, 0);
 }
 function xetTac(p) {          // kiểm tra tắc bóng khi đang trượt
@@ -465,10 +480,10 @@ function xetTac(p) {          // kiểm tra tắc bóng khi đang trượt
   const o = B.chu;
   if (o && o.doi !== p.doi && o.vt !== 'tm') {
     const dx = o.x - p.x, dz = o.z - p.z, d = Math.hypot(dx, dz);
-    if (d < (p.nguoi ? 2.3 : 1.7) && (dx * fx + dz * fz) / (d || 1) > (p.nguoi ? -0.2 : 0.1)) {
+    if (d < (p.nguoi ? 2.6 : 2.0) && (dx * fx + dz * fz) / (d || 1) > (p.nguoi ? -0.2 : 0.1)) {
       p.tacXong = true;
       const khoeA = p.nguoi ? 0.95 : MUC_KHO[CH.kho].cuopBong * (0.45 + p.nv.pn * 0.05) + 0.25;
-      if (o.buff.khien > 0 || o.buff.ma > 0 || (o.tt > 0 && o.ttKieu === 'bang') || o.dashT > 0 || Math.random() > khoeA - o.nv.pn * 0.006 - o.nv.re * 0.016) { p.stun = p.nguoi ? 0.3 : 0.6; tieng('nay'); return; }
+      if (o.buff.khien > 0 || o.buff.ma > 0 || (o.tt > 0 && (o.ttKieu === 'bang' || o.ttKieu === 'sieucap')) || o.dashT > 0 || Math.random() > khoeA - o.nv.pn * 0.006 - o.nv.re * 0.016) { p.stun = p.nguoi ? 0.3 : 0.6; tieng('nay'); return; }
       B.chu = null; B.vx = fx * 7 + o.vx * 0.3; B.vz = fz * 7 + o.vz * 0.3; B.vy = 2.2; B.daThu = false; B.cuoiCham = p; B.passer = null;
       o.stun = 0.55; o.nhanCd = 0.5; o.coBongT = 0; p.nhanCd = 0.15; p.tk.cuop++; p.nang = Math.min(100, p.nang + 15);
       toaHat(o.x, 0.9, o.z, 14, 0xffffff, 5, 0.45, 0.6, 0, 0); songXungKich(o.x, 0.1, o.z, 0xaaffcc, 1.8, 0.4); tieng('tac');
@@ -478,13 +493,25 @@ function xetTac(p) {          // kiểm tra tắc bóng khi đang trượt
   }
   if (!B.chu) {      // cắt bóng đang lăn
     const dx = B.x - p.x, dz = B.z - p.z, d = Math.hypot(dx, dz);
-    if (d < 1.5 && B.y < 1) { p.tacXong = true; B.vx = fx * 9; B.vz = fz * 9; B.vy = 1.5; B.cuoiCham = p; B.daThu = false; B.nhan = null; tieng('chuyen'); }
+    if (d < 1.9 && B.y < 1) { p.tacXong = true; B.vx = fx * 9; B.vz = fz * 9; B.vy = 1.5; B.cuoiCham = p; B.daThu = false; B.nhan = null; tieng('chuyen'); }
   }
 }
 function lach(p, ix, iz) {
   if (p.lachCd > 0 || p.stun > 0 || p.truot > 0 || p.dashT > 0) return;
   p.lachCd = (p.tt > 0 && p.ttKieu === 'chop') ? 0.25 : 3.3 - p.nv.re * 0.12; let m = Math.hypot(ix, iz);
   if (m < 0.2) { ix = Math.sin(p.ang); iz = Math.cos(p.ang); m = 1; }
+  const fx = Math.sin(p.ang), fz = Math.cos(p.ang);
+  if ((p.tt > 0 && p.ttKieu === 'croqueta')) {            // La Croqueta: kéo bóng sang ngang, hậu vệ gần đứng hình
+    const ben = (ix / m) * fz - (iz / m) * fx >= 0 ? 1 : -1;   // chọn bên theo hướng bấm
+    p.dashX = fz * ben; p.dashZ = -fx * ben; p.dashV = 18; p.dashT = 0.16; p.lachCd = 0.6;
+    for (const q of CT) if (q.doi !== p.doi && q.buff.khien <= 0 && Math.hypot(q.x - p.x, q.z - p.z) < 2.8) q.stun = Math.max(q.stun, 0.6);
+    tieng('chon'); toaHat(p.x, 0.3, p.z, 10, 0xffe36a, 3, 0.4, 0.6, 0, 0); songXungKich(p.x, 0.1, p.z, 0xffe36a, 2.2, 0.35); return;
+  }
+  if ((p.tt > 0 && p.ttKieu === 'elastico')) {            // Elastico: giả đảo chân rồi vọt đi, hậu vệ trước mặt đứng hình
+    p.dashX = ix / m; p.dashZ = iz / m; p.dashV = 24; p.dashT = 0.22; p.lachCd = 0.9; p.xoayAnim = 0.2;
+    for (const q of CT) { const dx = q.x - p.x, dz = q.z - p.z, d = Math.hypot(dx, dz); if (q.doi !== p.doi && q.buff.khien <= 0 && d < 3.2 && (dx * fx + dz * fz) / (d || 1) > -0.2) q.stun = Math.max(q.stun, 0.9); }
+    tieng('chieu'); toaHat(p.x, 0.3, p.z, 12, 0x9ad8ff, 3, 0.4, 0.6, 0, 0); return;
+  }
   p.dashX = ix / m; p.dashZ = iz / m; p.dashV = 22; p.dashT = 0.2; tieng('chuyen');
   toaHat(p.x, 0.3, p.z, 8, 0xffffff, 3, 0.4, 0.6, 0, 0);
 }
@@ -497,14 +524,14 @@ function xoay(p) {
   }
 }
 function thucTinh(p) {
-  if (p.nang < 100 || p.tt > 0) return;
+  if (p.nang < 100 || p.tt > 0) { if (p.nguoi && p.tt <= 0) { thongBao('Năng lượng ' + Math.floor(p.nang) + '% – rê bóng, chuyền, tắc để đầy!', true, 1300); tieng('nay'); } return; }
   p.tt = GIAY_THUC_TINH; p.nang = 0; tieng('sam'); chopT = 0.8; rung = Math.max(rung, 0.5);
   songXungKich(p.x, 0.1, p.z, 0xffc84a, 5, 0.8); songXungKich(p.x, 0.1, p.z, 0x6ab8ff, 3, 0.6);
   toaHat(p.x, 1, p.z, 40, 0xffe070, 9, 0.9, 0.9, 0, 0);
   if (p.nguoi) thongBao('THỨC TỈNH: ' + timTT(p.ttKieu).ten.toUpperCase() + '!', true);
 }
 function dungChieu(p) {
-  if (p.chieuCd > 0 || p.stun > 0) return;
+  if (p.chieuCd > 0 || p.stun > 0) { if (p.nguoi && p.chieuCd > 0) { thongBao('Chiêu hồi sau ' + Math.ceil(p.chieuCd) + ' giây', true, 900); tieng('nay'); } return; }
   p.chieuCd = GIAY_HOI_CHIEU; const ma = p.chieu.ma; tieng('chieu');
   songXungKich(p.x, 0.1, p.z, 0xcf9bff, 2.4, 0.5);
   if (ma === 'sam') p.buff.sam = 10;
@@ -534,14 +561,14 @@ function dungChieu(p) {
 }
 
 // ===================== CẬP NHẬT MỘT CẦU THỦ =====================
-const DEM_GIAM = ['kick', 'truot', 'dive', 'stun', 'nhanCd', 'tacCd', 'chieuCd', 'tt', 'lachCd', 'xoayCd', 'hatCd', 'dashT', 'xoayAnim', 'auraT'];
+const DEM_GIAM = ['kick', 'truot', 'dive', 'stun', 'nhanCd', 'tacCd', 'chieuCd', 'tt', 'lachCd', 'xoayCd', 'hatCd', 'dashT', 'xoayAnim', 'auraT', 'lonT', 'nhayT'];
 function apDung(p, inp, h) {
   for (const k of DEM_GIAM) if (p[k] > 0) p[k] = Math.max(0, p[k] - h);
   for (const k in p.buff) if (p.buff[k] > 0) p.buff[k] = Math.max(0, p.buff[k] - h);
   if (p.giu > 0) p.giu = Math.max(0, p.giu - h);
   const diChoi = (tt === 'choi');
   if (!diChoi) { inp = { ix: 0, iz: 0 }; }
-  const khoa = p.stun > 0;
+  const khoa = p.stun > 0 || p.lonT > 0;
   if (khoa) { inp.ix = inp.iz = 0; inp.gong = inp.tha = inp.chuyen = inp.tac = inp.chieu = inp.tt = inp.lach = inp.xoay = inp.hat = false; }
   // ôm bóng của thủ môn
   if (B.chu === p && p.vt === 'tm') { p.giu = 0.2; p.giuHold += h; }
@@ -569,7 +596,7 @@ function apDung(p, inp, h) {
   let ix = inp.ix, iz = inp.iz; const mm = Math.hypot(ix, iz); if (mm > 1) { ix /= mm; iz /= mm; }
   let tx = ix * vmax, tz = iz * vmax, kk = 11;
   if (p.dashT > 0) { tx = p.dashX * p.dashV; tz = p.dashZ * p.dashV; kk = 40; }
-  else if (p.truot > 0) { tx = p.dashX * p.dashV * (p.truot / 0.38); tz = p.dashZ * p.dashV * (p.truot / 0.38); kk = 25; }
+  else if (p.truot > 0) { const u = p.truot / GIAY_TRUOT_TAC; tx = p.dashX * p.dashV * (0.35 + 0.65 * u); tz = p.dashZ * p.dashV * (0.35 + 0.65 * u); kk = 25; if (Math.random() < h * 40) hat(p.x - p.dashX * 0.6, 0.15, p.z - p.dashZ * 0.6, ngauNhien(-1, 1), ngauNhien(1, 2.5), ngauNhien(-1, 1), 0xcfe8b0, 0.45, 0.5, 0.9, 1.5); }
   else if (p.stun > 0) { tx = tz = 0; kk = 6; }
   const k = Math.min(1, h * kk); p.vx += (tx - p.vx) * k; p.vz += (tz - p.vz) * k;
   p.x = kep(p.x + p.vx * h, -LIM_X, LIM_X); p.z = kep(p.z + p.vz * h, -LIM_Z, LIM_Z);
@@ -581,20 +608,28 @@ function apDung(p, inp, h) {
   // hào quang
   if (p.tt > 0 || p.buff.toc > 0 || p.buff.khien > 0 || p.buff.sam > 0 || p.buff.cong > 0 || p.buff.tay > 0 || p.buff.xuyen > 0 || p.buff.nam > 0 || p.buff.ma > 0) {
     if (Math.random() < h * 40) {
-      const mau = p.tt > 0 ? (p.ttKieu === 'bang' ? (Math.random() < .5 ? 0xbfefff : 0x6ab8ff) : p.ttKieu === 'loc' ? (Math.random() < .5 ? 0xb0ffb0 : 0xffffff) : p.ttKieu === 'chop' ? 0xffffff : (Math.random() < .5 ? 0xffc84a : 0x6ab8ff)) : p.buff.ma > 0 ? 0xd0d8ff : p.buff.nam > 0 ? 0xff6ad5 : p.buff.khien > 0 ? 0x7ac8ff : p.buff.toc > 0 ? 0x7dffa0 : p.buff.tay > 0 ? 0xff9a3a : p.buff.xuyen > 0 ? 0xc48fff : 0xffee70;
+      const mau = p.tt > 0 ? (p.ttKieu === 'bang' ? (Math.random() < .5 ? 0xbfefff : 0x6ab8ff) : p.ttKieu === 'loc' ? (Math.random() < .5 ? 0xb0ffb0 : 0xffffff) : p.ttKieu === 'chop' ? 0xffffff : p.ttKieu === 'xedap' ? 0xff8a5a : p.ttKieu === 'rainbow' ? [0xff5a5a, 0xffd23a, 0x5aff9a, 0x5aa0ff][(Math.random() * 4) | 0] : p.ttKieu === 'sieucap' ? 0x9affc8 : p.ttKieu === 'mu' ? 0xff4a3a : p.ttKieu === 'gocxa' ? 0xb0ffb0 : (p.ttKieu === 'croqueta' || p.ttKieu === 'elastico') ? 0xffe36a : p.ttKieu === 'bienhuong' ? 0x9affc8 : p.ttKieu === 'vole' ? 0xcfe8ff : (Math.random() < .5 ? 0xffc84a : 0x6ab8ff)) : p.buff.ma > 0 ? 0xd0d8ff : p.buff.nam > 0 ? 0xff6ad5 : p.buff.khien > 0 ? 0x7ac8ff : p.buff.toc > 0 ? 0x7dffa0 : p.buff.tay > 0 ? 0xff9a3a : p.buff.xuyen > 0 ? 0xc48fff : 0xffee70;
       hat(p.x + ngauNhien(-.4, .4), ngauNhien(0.1, 1.8), p.z + ngauNhien(-.4, .4), ngauNhien(-.5, .5), ngauNhien(1.5, 3.5), ngauNhien(-.5, .5), mau, 0.5, 0.7, 0.1, 0);
     }
   }
-  if (p.mung) { p.mungT += h; if (p.mung === 'nhay') p.ny = Math.abs(Math.sin(p.mungT * 8)) * 0.9; else if (p.mung === 'xoay') { p.xoayNguoi = p.mungT * 12; p.ny = Math.abs(Math.sin(p.mungT * 5)) * 0.4; } else if (p.mung === 'truot') { p.ny = 0; } } else p.ny = 0;
+  if (p.mung) { p.mungT += h; if (p.mung === 'nhay') p.ny = Math.abs(Math.sin(p.mungT * 8)) * 0.9; else if (p.mung === 'xoay') { p.xoayNguoi = p.mungT * 12; p.ny = Math.abs(Math.sin(p.mungT * 5)) * 0.4; } else if (p.mung === 'truot') { p.ny = 0; } }
+  else if (p.nhayT > 0) p.ny = Math.sin((1 - p.nhayT / 0.5) * Math.PI) * 1.0;
+  else if (p.lonT > 0) p.ny = Math.sin((1 - p.lonT / 0.65) * Math.PI) * 0.9;
+  else p.ny = 0;
   // năng lượng
-  if (diChoi && B.chu === p && p.spd > 3) p.nang = Math.min(100, p.nang + h * (p.nguoi ? 9 : 5) * (0.6 + p.nv.the * 0.06));
+  if (diChoi && B.chu === p && p.spd > 3) p.nang = Math.min(100, p.nang + h * (p.nguoi ? 15 : 5) * (0.6 + p.nv.the * 0.06));
+  if (p.nguoi && diChoi && p.tt <= 0 && p.nang >= 100 && !p.daBaoDay) { p.daBaoDay = true; thongBao('THỨC TỈNH SẴN SÀNG! ' + (DV.camUng ? 'bấm nút 🔥' : 'bấm F'), true, 1600); tieng('ting'); }
+  if (p.nang < 100) p.daBaoDay = false;
   if (p.dive > 0) p.vx *= 0.98;
 }
 function thaSut(p, inp, l) {
-  if (B.chu === p) sut(p, inp.aimX, inp.aimZ, l);
+  const xeDap = (p.tt > 0 && p.ttKieu === 'xedap'), vole = (p.tt > 0 && p.ttKieu === 'vole');
+  if (B.chu === p) sut(p, inp.aimX, inp.aimZ, l, xeDap ? 'xedap' : undefined);
   else {
     const d = Math.hypot(B.x - p.x, B.z - p.z);
-    if (!B.chu && d < 1.7 && B.y < 1.4) sut(p, inp.aimX, inp.aimZ, l); else p.kick = 0.3;
+    if (!B.chu && vole && d < 2.8 && B.y < 3.4 && B.y > 0.9) { p.nhayT = 0.5; sut(p, inp.aimX, inp.aimZ, 1, 'vole'); }
+    else if (!B.chu && xeDap && d < 2.4 && B.y < 3.4) sut(p, inp.aimX, inp.aimZ, Math.max(l, 0.8), 'xedap');
+    else if (!B.chu && d < 1.7 && B.y < 1.4) sut(p, inp.aimX, inp.aimZ, l); else p.kick = 0.3;
   }
 }
 function tachNguoi() {
@@ -618,11 +653,13 @@ function buocBong(h) {
   B.x += B.vx * h; B.y += B.vy * h; B.z += B.vz * h;
   if (B.y < BONG_R) {
     B.y = BONG_R;
-    if (B.vy < -2.5) { B.vy = -B.vy * 0.6; if (B.vy > 3) tieng('nay'); } else B.vy = 0;
+    if (B.cauVongT > 0) { B.vy = 0; B.vx *= 0.5; B.vz *= 0.5; }               // bóng cầu vồng rơi xuống là nằm im ở chân
+    else if (B.vy < -2.5) { B.vy = -B.vy * 0.6; if (B.vy > 3) tieng('nay'); } else B.vy = 0;
     const ms = Math.exp(-0.9 * h); B.vx *= ms; B.vz *= ms; if (Math.hypot(B.vx, B.vz) < 0.15) { B.vx = B.vz = 0; B.xuyen = false; }
   } else { const kh = Math.exp(-0.06 * h); B.vx *= kh; B.vz *= kh; }
   B.quayX += B.vz * h * 2.6; B.quayZ -= B.vx * h * 2.6;
   if (B.passerT > 0) B.passerT -= h;
+  if (B.cauVongT > 0) { B.cauVongT -= h; const o = B.cauVong; if (o) { const tx = o.x + Math.sin(o.ang) * 1.1, tz = o.z + Math.cos(o.ang) * 1.1, k = Math.min(1, h * 6); B.vx += ((tx - B.x) * 4 - B.vx) * k; B.vz += ((tz - B.z) * 4 - B.vz) * k; } }   // bóng cầu vồng bay theo người hất, rơi đúng chân
   // hàng rào hai bên
   const ZL = SAN_RONG + 0.35 - BONG_R;
   if (B.z > ZL) { B.z = ZL; B.vz = -Math.abs(B.vz) * 0.7; if (Math.abs(B.vz) > 3) tieng('nay'); }
@@ -661,7 +698,7 @@ function xuLyBong(h) {
     const d = Math.hypot(B.x - g.x, B.z - g.z), reach = 1.5 + (g.buff.tay > 0 ? 1.7 : 0) + (g.nguoi ? 0.4 : 0);
     if (d < reach && B.y < 3.1) {
       B.daThu = true; g.dive = 0.55; g.diveDir = Math.sign(B.z - g.z) || 1;
-      const loi = g.nguoi ? 0.12 : (g.doi === 0 ? 0.28 : MUC_KHO[CH.kho].thuMonLoi) * (B.sieu ? 1.5 : 1) * (1.25 - g.nv.pn * 0.05);
+      const loi = g.nguoi ? 0.12 : (g.doi === 0 ? 0.28 : MUC_KHO[CH.kho].thuMonLoi) * (B.sieu ? 1.5 : 1) * (B.manh ? 1.6 : 1) * (1.25 - g.nv.pn * 0.05);
       if (Math.random() < loi) continue;
       g.tk.cuu++; g.nang = Math.min(100, g.nang + 15); tieng('cuu'); songXungKich(B.x, B.y, B.z, 0xffffff, 1.6, 0.4); toaHat(B.x, B.y, B.z, 16, 0xfff2b0, 6, 0.5, 0.7, 0, 0);
       if (sp < 18 && Math.random() < 0.65) { nhanBong(g); }
@@ -671,7 +708,7 @@ function xuLyBong(h) {
   }
   // Nam Châm kéo bóng
   if (!B.chu) for (const p of CT) {
-    if (p.buff.nam <= 0) continue; const dx = p.x - B.x, dz = p.z - B.z, d = Math.hypot(dx, dz);
+    if (p.buff.nam <= 0 && !(p.tt > 0 && p.ttKieu === 'sieucap')) continue; const dx = p.x - B.x, dz = p.z - B.z, d = Math.hypot(dx, dz);
     if (d < 9 && d > 0.3) { B.vx += dx / d * 30 * h; B.vz += dz / d * 30 * h; if (Math.random() < h * 20) hat(B.x, B.y, B.z, 0, 1, 0, 0xff6ad5, 0.3, 0.5, 0.1, 0); }
   }
   // nhặt bóng
@@ -679,7 +716,8 @@ function xuLyBong(h) {
   let tot = null, td = 99;
   for (const p of CT) {
     if (p.stun > 0 || p.nhanCd > 0 || p.truot > 0 || p.dive > 0.3) continue;
-    const d = Math.hypot(B.x - p.x, B.z - p.z), reach = p.vt === 'tm' ? 1.35 : (p.nguoi ? 1.35 : 0.95);
+    const d = Math.hypot(B.x - p.x, B.z - p.z), reach = (B.cauVong === p && B.cauVongT > 0) ? 2.4 : (p.tt > 0 && p.ttKieu === 'sieucap') ? 2.3 : p.vt === 'tm' ? 1.35 : (p.nguoi ? 1.35 : 0.95);
+    if (B.cauVong && B.cauVong !== p && B.cauVong.doi !== p.doi && B.cauVongT > 0) continue;   // bóng cầu vồng: đối thủ không được nhặt trong 2 giây
     if (d < reach && B.y < 1.35 && d < td) {
       if (Math.hypot(B.vx, B.vz) > 22 && p.vt !== 'tm') continue;
       if (B.xuyen && p.vt !== 'tm' && Math.hypot(B.vx, B.vz) > 6) continue;   // bóng xuyên phá: chỉ thủ môn chạm được
@@ -777,7 +815,7 @@ function aiBuoc(p, h) {
   // tắc bóng (không tắc ngay khi người chơi vừa nhận bóng, để bé kịp xoay xở)
   if (B.chu && B.chu.doi !== p.doi && p.vt !== 'tm' && p.tacCd <= 0 && B.chu.buff.ma <= 0 && !(B.chu.nguoi && B.chu.coBongT < 1.0)) {
     const d2 = Math.hypot(B.chu.x - p.x, B.chu.z - p.z);
-    if (d2 < 1.9 && Math.random() < h * 2.6 * kho.cuopBong) { p.ang = Math.atan2(B.chu.x - p.x, B.chu.z - p.z); tac(p); }
+    if (d2 < 2.6 && Math.random() < h * 2.6 * kho.cuopBong) { p.ang = Math.atan2(B.chu.x - p.x, B.chu.z - p.z); tac(p); }
   }
   return inp;
 }
