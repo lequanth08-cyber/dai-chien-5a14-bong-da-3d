@@ -571,7 +571,10 @@ function apDung(p, inp, h) {
   const khoa = p.stun > 0 || p.lonT > 0;
   if (khoa) { inp.ix = inp.iz = 0; inp.gong = inp.tha = inp.chuyen = inp.tac = inp.chieu = inp.tt = inp.lach = inp.xoay = inp.hat = false; }
   // ôm bóng của thủ môn
-  if (B.chu === p && p.vt === 'tm') { p.giu = 0.2; p.giuHold += h; }
+  if (B.chu === p && p.vt === 'tm') {
+    p.giu = 0.2; p.giuHold += h;
+    if (p.nguoi && p.giuHold > 4 && diChoi) { const q = gan(p, CT.filter(z => z.doi === p.doi && z.vt !== 'tm')); if (q) chuyen(p, q.x - p.x, q.z - p.z); else hatBong(p, manh(p), 0); }   // không cho giữ bóng câu giờ mãi
+  }
   // gồng sút
   if (inp.gong && !khoa) p.gong = Math.min(GIAY_GONG, p.gong + h); else if (!inp.gong && !inp.tha) p.gong = Math.max(0, p.gong - h * 4);
   if (inp.tha) { const l = Math.max(0.2, p.gong / GIAY_GONG); thaSut(p, inp, l); p.gong = 0; }
@@ -659,6 +662,7 @@ function buocBong(h) {
   } else { const kh = Math.exp(-0.06 * h); B.vx *= kh; B.vz *= kh; }
   B.quayX += B.vz * h * 2.6; B.quayZ -= B.vx * h * 2.6;
   if (B.passerT > 0) B.passerT -= h;
+  if (B.cauVong && B.cuoiCham !== B.cauVong) { B.cauVong = null; B.cauVongT = 0; }   // có người khác chạm bóng thì hết hiệu lực cầu vồng
   if (B.cauVongT > 0) { B.cauVongT -= h; const o = B.cauVong; if (o) { const tx = o.x + Math.sin(o.ang) * 1.1, tz = o.z + Math.cos(o.ang) * 1.1, k = Math.min(1, h * 6); B.vx += ((tx - B.x) * 5 + o.vx - B.vx) * k; B.vz += ((tz - B.z) * 5 + o.vz - B.vz) * k; } }   // bóng cầu vồng bay theo người hất, rơi đúng chân
   // hàng rào hai bên
   const ZL = SAN_RONG + 0.35 - BONG_R;
@@ -731,7 +735,7 @@ function xuLyBong(h) {
 function gan(p, ds) { let b = null, bd = 1e9; for (const q of ds) { const d = Math.hypot(q.x - p.x, q.z - p.z); if (d < bd) { bd = d; b = q; } } return b; }
 function nuaNha(dir, x) { return dir > 0 ? Math.min(x, 8) : Math.max(x, -8); }   // hậu vệ không chạy quá xa sang sân đối phương
 function aiQuyet(p, kho) {
-  const dir = manh(p), A = p.ai, chu = B.chu, coBong = chu === p, taGiu = chu && chu.doi === p.doi, dichGiu = chu && chu.doi !== p.doi;
+  const dir = manh(p), A = p.ai, chu = B.chu, coBong = chu === p, taGiu = chu && chu.doi === p.doi, bongMa = chu && chu.doi !== p.doi && chu.buff.ma > 0, dichGiu = chu && chu.doi !== p.doi && !bongMa;
   const di = (x, z) => { A.tx = kep(x, -LIM_X, LIM_X); A.tz = kep(z, -LIM_Z, LIM_Z); };
   const nhaX = -dir * SAN_DAI, K = HE_SAN, lane = p.lane || 0;
   if (p.vt === 'tm') {
@@ -777,6 +781,10 @@ function aiQuyet(p, kho) {
     const t = chu;
     if (tdao) di(t.x + dir * 12, Math.abs(t.z) > 12 ? -Math.sign(t.z) * 7 : lane * 10);
     else di(nuaNha(dir, t.x - dir * 9), lane * 11 + t.z * 0.2);
+    return;
+  }
+  if (bongMa) {                      // đối thủ đang Bóng Ma: không đuổi theo, giữ đội hình
+    if (tdao) di(noi(chu.x, 0, 0.5), lane * 10); else di(nuaNha(dir, noi(chu.x, nhaX, 0.45)), lane * 10 + chu.z * 0.3);
     return;
   }
   if (dichGiu) {                     // đối thủ có bóng: người gần nhất áp sát, người thứ hai chặn đường
@@ -886,6 +894,7 @@ function batVang() {
   vang = true; thoiGian = 60; giaoBong(Math.random() < 0.5 ? 0 : 1); $('giaiDoan').textContent = 'BÀN THẮNG VÀNG'; thongBao('BÀN THẮNG VÀNG!', true, 2200); tieng('coiDai');
 }
 function giaoBong(doiBD) {
+  REC.length = 0;                       // bỏ cảnh quay cũ để replay không lẫn với bàn thắng trước
   for (const p of CT) { p.mung = null; p.mungT = 0; p.ny = 0; p.stun = 0; p.truot = 0; p.dashT = 0; p.dive = 0; p.gong = 0; p.giu = 0; p.vx = p.vz = 0; p.xoayNguoi = 0; p.ai.act = null; }
   datBong(); datViTri(doiBD); tt = 'chuyensan'; chuyenSanT = 0; chamT = 0; zoom = 1; vuaGhi = null; capNhatHUD(true);
 }
@@ -930,7 +939,7 @@ function tamDung(chu) {
   $('dungChu').textContent = chu || 'Bấm "Chơi tiếp" khi bạn sẵn sàng.';
 }
 $('nutDung').onclick = () => { moAmThanh(); tamDung(); };
-$('dungTiep').onclick = () => { if (tt !== 'tamdung') return; tt = ttTruoc; hienLop(['hud', 'cam']); };
+$('dungTiep').onclick = () => { if (tt !== 'tamdung') return; daNhacMat = false; tt = ttTruoc; hienLop(['hud', 'cam']); };
 $('dungVe').onclick = () => veSanh();
 function hienLop(ds) {
   $('cuaHangLop').classList.remove('hien');
