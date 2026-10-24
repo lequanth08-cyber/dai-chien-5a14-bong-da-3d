@@ -8,9 +8,9 @@ Game bóng đá 5 đấu 5 chạy trên trình duyệt, đồ họa 3D, làm cho
 
 | Lớp 5A1.4 | Lớp 5A2.4 |
 |---|---|
-| Quốc Bảo (thủ môn) | Thiện Nhân (thủ môn) |
-| Vinh Nhật (hậu vệ) | Quang Minh, Thiên (hậu vệ) |
-| Ebuka, Nho, Cacao (tiền đạo) | Hiếu, Nhật Nam (tiền đạo) |
+| Nho (thủ môn) | Thiện Nhân (thủ môn) |
+| Quốc Bảo, Vinh Nhật (hậu vệ) | Quang Minh, Thiên (hậu vệ) |
+| Ebuka, Cacao (tiền đạo) | Hiếu, Nhật Nam (tiền đạo) |
 
 Mỗi cầu thủ có 6 chỉ số: Tốc độ, Sút, Phòng thủ, Chuyền, Rê bóng, Thể lực. Chuyền làm bóng đi nhanh và đón đúng hướng chạy; Rê bóng giúp giữ bóng chạy nhanh hơn, khó bị tắc hơn và lách hồi nhanh hơn; Thể lực làm thanh Thức tỉnh đầy nhanh hơn và tắc bóng hồi nhanh hơn.
 

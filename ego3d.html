@@ -370,15 +370,15 @@ const MAU_GIAY = ['#ffffff', '#ffd23a', '#2de08a', '#ff5ac8'];
 // vt: tm = thủ môn, hv = hậu vệ, tdao = tiền đạo. Muốn sửa chỉ số, tên, màu tóc... cứ sửa ở đây.
 // 6 chỉ số (1-10): toc = Tốc độ, sut = Sút, pn = Phòng thủ, chuyen = Chuyền, re = Rê bóng, the = Thể lực
 const NHAN_VAT = [
-  { id: 'ebuka', ten: 'Ebuka', lop: '5A1.4', vai: 'Tiền đạo · Đội trưởng', vt: 'tdao', so: 10, toc: 8, sut: 9, pn: 5, chuyen: 7, re: 7, the: 8, da: 0xb98660, mauToc: 0x0e0e12, kieuToc: 'tron', mau: '#ff7a3a', anh: true, anhDa: 0x8e5d3e,
-    mota: 'Đội trưởng nhanh nhẹn, thích ghi bàn bằng những cú sút sấm sét.',
+  { id: 'ebuka', ten: 'Ebuka', lop: '5A1.4', vai: 'Tiền đạo · Đội trưởng', vt: 'tdao', so: 10, toc: 9, sut: 9, pn: 6, chuyen: 8, re: 9, the: 9, da: 0xb98660, mauToc: 0x0e0e12, kieuToc: 'tron', mau: '#ff7a3a', anh: true, anhDa: 0x8e5d3e,
+    mota: 'Đội trưởng toàn diện: chạy nhanh, rê bóng khéo và sút rất căng. Ngôi sao của lớp 5A1.4!',
     chieu: { ma: 'sam', ten: 'Sút Sấm Sét', mt: 'Cú sút kế tiếp cực mạnh, có tia chớp xanh.' } },
-  { id: 'nho', ten: 'Nho', lop: '5A1.4', vai: 'Tiền đạo', vt: 'tdao', so: 11, toc: 9, sut: 9, pn: 6, chuyen: 8, re: 9, the: 9, da: 0xefc8a2, mauToc: 0x15151a, kieuToc: 'tron', mau: '#9a5cff', anh: true, anhDa: 0xdcae8a,
-    mota: 'Tiền đạo toàn diện: chạy nhanh, rê bóng khéo và sút rất căng. Ngôi sao của lớp 5A1.4!',
-    chieu: { ma: 'xuyen', ten: 'Sút Xuyên Phá', mt: 'Cú sút kế tiếp bay xuyên qua mọi hậu vệ, chỉ thủ môn mới chạm được.' } },
-  { id: 'quocbao', ten: 'Quốc Bảo', lop: '5A1.4', vai: 'Thủ môn', vt: 'tm', so: 1, toc: 6, sut: 5, pn: 9, chuyen: 7, re: 4, the: 8, da: 0xf6d3b5, mauToc: 0x101014, kieuToc: 'maibang', mau: '#3a8bff',
-    mota: 'Thủ môn vững như bức tường, bắt bóng chắc tay và ném bóng rất xa.',
+  { id: 'nho', ten: 'Nho', lop: '5A1.4', vai: 'Thủ môn', vt: 'tm', so: 1, toc: 6, sut: 5, pn: 9, chuyen: 7, re: 4, the: 8, da: 0xefc8a2, mauToc: 0x15151a, kieuToc: 'tron', mau: '#9a5cff', anh: true, anhDa: 0xdcae8a,
+    mota: 'Thủ môn bình tĩnh, bắt bóng chắc tay và luôn động viên cả đội.',
     chieu: { ma: 'tay', ten: 'Bàn Tay Thép', mt: 'Tay dài gấp đôi và chạy nhanh hơn trong 4 giây.' } },
+  { id: 'quocbao', ten: 'Quốc Bảo', lop: '5A1.4', vai: 'Hậu vệ', vt: 'hv', so: 4, toc: 6, sut: 6, pn: 9, chuyen: 7, re: 5, the: 8, da: 0xf6d3b5, mauToc: 0x101014, kieuToc: 'maibang', mau: '#3a8bff',
+    mota: 'Hậu vệ vững như bức tường, ít ai qua được cậu ấy.',
+    chieu: { ma: 'khien', ten: 'Khiên Sắt', mt: 'Không bị tắc bóng và đẩy lùi đối thủ xung quanh.' } },
   { id: 'hieu', ten: 'Hiếu', lop: '5A2.4', vai: 'Tiền đạo', vt: 'tdao', so: 8, toc: 8, sut: 7, pn: 6, chuyen: 8, re: 8, the: 9, da: 0xd9a273, mauToc: 0x2a1a0e, kieuToc: 'xoan', mau: '#25c47a',
     mota: 'Tiền đạo chạy không biết mệt, rê bóng rất khéo. Chọn Hiếu bạn sẽ đá cho lớp 5A2.4.',
     chieu: { ma: 'toc', ten: 'Tăng Tốc', mt: 'Chạy nhanh hơn rất nhiều trong 4 giây.' } },
@@ -398,7 +398,7 @@ const NHAN_VAT = [
     mota: '', chieu: { ma: 'tay', ten: 'Bàn Tay Thép', mt: '' } }
 ];
 // Hai đội, mỗi đội 5 cầu thủ (số là vị trí trong danh sách NHAN_VAT ở trên)
-const DOI_LOP = { '5A1.4': [2, 4, 0, 1, 5], '5A2.4': [9, 7, 8, 3, 6] };   // 5A1.4: thủ môn Quốc Bảo, hậu vệ Vinh Nhật, tiền đạo Ebuka, Nho, Cacao
+const DOI_LOP = { '5A1.4': [1, 2, 4, 0, 5], '5A2.4': [9, 7, 8, 3, 6] };   // 5A1.4: thủ môn Nho, hậu vệ Quốc Bảo + Vinh Nhật, tiền đạo Ebuka + Cacao
 
 // ===================== KHỞI TẠO THREE =====================
 const canvas = document.getElementById('c');
