@@ -38,7 +38,8 @@ const MAU_GIAY = ['#ffffff', '#ffd23a', '#2de08a', '#ff5ac8'];
 
 // ===================== CỬA HÀNG (xu kiếm được khi chơi, không dùng tiền thật) =====================
 const XU_BAN_DAU = 60;                                             // xu có sẵn khi chơi lần đầu
-const XU_THUONG = { ban: 10, kienTao: 5, thang: 40, hoa: 15, thua: 5, mvp: 20 };   // thưởng sau mỗi trận
+const XU_THUONG = { kienTao: 5, thang: 40, hoa: 15, thua: 5, mvp: 20 };   // thưởng sau mỗi trận
+const XU_MOI_BAN = { de: 3, vua: 5, kho: 10 };                             // mỗi bàn bạn ghi được thưởng bao nhiêu xu, tùy mức khó
 const GIA_NGAU_NHIEN = 15;                                         // giá "Thử vận may": luôn nhận một chiêu mới chưa có
 // 10 chiêu bấm Q. Mỗi bạn có sẵn chiêu riêng của mình (không mất xu), muốn chiêu khác thì mua ở cửa hàng.
 const CHIEU_KHO = [

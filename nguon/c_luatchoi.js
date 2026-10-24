@@ -907,7 +907,8 @@ function ketThuc() {
   let xuThem = 0, lyDo = [];
   if (NG) {
     const kqXu = kq === 'THẮNG' ? XU_THUONG.thang : kq === 'HÒA' ? XU_THUONG.hoa : XU_THUONG.thua; xuThem += kqXu; lyDo.push((kq === 'THẮNG' ? 'thắng' : kq === 'HÒA' ? 'hòa' : 'thi đấu') + ' +' + kqXu);
-    if (NG.tk.ban) { xuThem += NG.tk.ban * XU_THUONG.ban; lyDo.push(NG.tk.ban + ' bàn +' + NG.tk.ban * XU_THUONG.ban); }
+    const xuBan = XU_MOI_BAN[CH.kho] || XU_MOI_BAN.de;
+    if (NG.tk.ban) { xuThem += NG.tk.ban * xuBan; lyDo.push(NG.tk.ban + ' bàn ×' + xuBan + ' (mức ' + ({ de: 'Dễ', vua: 'Vừa', kho: 'Khó' })[CH.kho] + ') +' + NG.tk.ban * xuBan); }
     if (NG.tk.kt) { xuThem += NG.tk.kt * XU_THUONG.kienTao; lyDo.push(NG.tk.kt + ' kiến tạo +' + NG.tk.kt * XU_THUONG.kienTao); }
     if (mvp === NG) { xuThem += XU_THUONG.mvp; lyDo.push('MVP +' + XU_THUONG.mvp); }
     KHO.xu += xuThem; luuKHO();
